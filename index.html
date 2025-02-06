@@ -154,16 +154,27 @@
         document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
 
         let gesamterBilanz = gezahlteAbschlaege - (gesamtStromKosten + gesamtGasKosten);
-        document.getElementById("guthaben").textContent = gesamterBilanz.toFixed(2) + " €";
+        let guthabenElement = document.getElementById("guthaben");
+        guthabenElement.textContent = gesamterBilanz.toFixed(2) + " €";
+        guthabenElement.className = gesamterBilanz >= 0 ? "positive" : "negative";
 
         document.getElementById("stromVormonat").value = stromAktuell;
         document.getElementById("gasVormonat").value = gasAktuell;
+        localStorage.setItem("stromVormonat", stromAktuell);
+        localStorage.setItem("gasVormonat", gasAktuell);
+
         document.getElementById("stromAktuell").value = "";
         document.getElementById("gasAktuell").value = "";
     }
 
     function rechnerLeeren() {
+        localStorage.clear();
         location.reload();
+    }
+
+    function ladeGespeicherteDaten() {
+        document.getElementById("stromVormonat").value = localStorage.getItem("stromVormonat") || "";
+        document.getElementById("gasVormonat").value = localStorage.getItem("gasVormonat") || "";
     }
 </script>
 
