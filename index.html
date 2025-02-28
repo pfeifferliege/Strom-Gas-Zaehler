@@ -157,12 +157,16 @@
         document.getElementById("guthaben").textContent = gesamterBilanz.toFixed(2) + " €";
         document.getElementById("guthaben").className = gesamterBilanz >= 0 ? "positive" : "negative";
 
-        localStorage.setItem("stromVormonat", stromAktuell);
-        localStorage.setItem("gasVormonat", gasAktuell);
+        document.getElementById("stromVormonat").value = stromAktuell;
+    document.getElementById("gasVormonat").value = gasAktuell;
 
-        document.getElementById("stromAktuell").value = "";
-        document.getElementById("gasAktuell").value = "";
-    }
+    localStorage.setItem("stromVormonat", stromAktuell);
+    localStorage.setItem("gasVormonat", gasAktuell);
+
+    // Eingabefelder für aktuelle Werte leeren
+    document.getElementById("stromAktuell").value = "";
+    document.getElementById("gasAktuell").value = "";
+}
 
     function rechnerLeeren() {
         localStorage.clear();
