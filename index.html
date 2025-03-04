@@ -135,15 +135,24 @@
 
     let ergebnis = `
         <div class="result">
-                <strong>${new Date().toLocaleString('de-DE', { month: 'long' })} ${aktuellesJahr}</strong><br>
-                Stromkosten: ${stromKosten.toFixed(2)} €<br>
-                Gaskosten: ${gasKosten.toFixed(2)} €<br>
-                Gesamtkosten: <span class="${gesamtkostenClass}">${gesamtkosten.toFixed(2)} €</span><br>
-                <strong>Gezahlter Abschlag: ${monatlicherAbschlag.toFixed(2)} €</strong><br>
-                Guthaben/Nachzahlung: <span class="${bilanzClass}">${bilanz.toFixed(2)} €</span>
-            </div>
+            <strong>${new Date().toLocaleString('de-DE', { month: 'long' })} ${aktuellesJahr}</strong><br>
+            <hr>
+            <strong>🔌 Strom:</strong><br>
+            Verbrauch: ${stromAktuell} - ${stromVormonat} = ${stromVerbrauch} kWh<br>
+            Kosten: (${stromVerbrauch} kWh × 0.3928 €) + 14.99 € = ${stromKosten.toFixed(2)} €<br>
+            <hr>
+            <strong>🔥 Gas:</strong><br>
+            Verbrauch: ${gasAktuell} - ${gasVormonat} = ${gasVerbrauchM3} m³<br>
+            Umrechnung: ${gasVerbrauchM3} m³ × 10.5 = ${gasVerbrauchKWh.toFixed(2)} kWh<br>
+            Kosten: ${gasKosten.toFixed(2)} €<br>
+            <hr>
+            Gesamtkosten: <span class="${gesamtkostenClass}">${gesamtkosten.toFixed(2)} €</span><br>
+            <strong style="color: blue;">Gezahlter Abschlag: ${monatlicherAbschlag.toFixed(2)} €</strong><br>
+            Guthaben/Nachzahlung: <span class="${bilanzClass}">${bilanz.toFixed(2)} €</span>
+        </div>
         <hr>
     `;
+
 
     document.getElementById("monatsErgebnisse").innerHTML = ergebnis + document.getElementById("monatsErgebnisse").innerHTML;
 
@@ -151,6 +160,7 @@
     document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
     document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
     document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
+document.getElementById("gezahltAbschlag").style.color = "blue";
 
     let gesamterBilanz = gezahlteAbschlaege - (gesamtStromKosten + gesamtGasKosten);
     document.getElementById("guthaben").textContent = gesamterBilanz.toFixed(2) + " €";
@@ -168,10 +178,10 @@
 
 function berechneGasKosten(verbrauch) {
     let kosten = 0;
-    if (verbrauch <= 2700) kosten = verbrauch * 0.1896 + 3.75 * 12;
-    else if (verbrauch <= 13000) kosten = 2700 * 0.1896 + (verbrauch - 2700) * 0.1612 + 13.75 * 12;
-    else if (verbrauch <= 65400) kosten = 2700 * 0.1896 + 10300 * 0.1612 + (verbrauch - 13000) * 0.1490 + 31.25 * 12;
-    else kosten = 2700 * 0.1896 + 10300 * 0.1612 + 52400 * 0.1490 + (verbrauch - 65400) * 0.1547;
+    if (verbrauch <= 2700) kosten = verbrauch * 0.1896 + 3.75;
+    else if (verbrauch <= 13000) kosten = 2700 * 0.1896 + (verbrauch - 2700) * 0.1612 + 13.75;
+    else if (verbrauch <= 65400) kosten = 2700 * 0.1896 + 10300 * 0.1612 + (verbrauch - 13000) * 0.1490 + 31.25 ;
+    else kosten = 2700 * 0.1896 + 10300 * 0.1612 + 52400 * 0.1490 + (verbrauch - 65400)*0.1547;
     return kosten;
 }
 
