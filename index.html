@@ -63,13 +63,11 @@
 </head>
 <body onload="ladeGespeicherteDaten(); updateTarife();">
 
-  <body onload="ladeGespeicherteDaten()">
   <div class="container">
     <h2>Strom- & Gasrechner</h2>
-    <div class="summary-box">
-      <h3>Letzte Zählerstände</h3>
-      <p>Strom: <span id="lastStromVormonat">–</span> → <span id="lastStromAktuell">–</span> kWh</p>
-      <p>Gas: <span id="lastGasVormonat">–</span> → <span id="lastGasAktuell">–</span> m³</p>
+    <h1>💼 Aktuelle Bilanz</h1>
+<p class="result">Guthaben/Nachzahlung: <span id="guthabenKurz" class="positive">0,00 €</span></p>
+    
     </div>
 
     <label>?? Stromtarif ausw�hlen:</label>
@@ -257,6 +255,8 @@ document.getElementById("gezahltAbschlag").style.color = "blue";
       } else {
         document.getElementById("guthaben").classList.add("positive");
         document.getElementById("guthaben").classList.remove("negative");
+        document.getElementById("guthabenKurz").innerText = guthaben.toFixed(2) + " €";
+        document.getElementById("guthabenKurz").className = guthaben < 0 ? "negative" : "positive";
       }
     }
 
