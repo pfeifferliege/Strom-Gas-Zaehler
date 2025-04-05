@@ -63,9 +63,13 @@
 </head>
 <body onload="ladeGespeicherteDaten(); updateTarife();">
 
+  <body onload="ladeGespeicherteDaten()">
   <div class="container">
     <h2>Strom- & Gasrechner</h2>
-    
+    <div class="summary-box">
+      <h3>Letzte Zählerstände</h3>
+      <p>Strom: <span id="lastStromVormonat">–</span> → <span id="lastStromAktuell">–</span> kWh</p>
+      <p>Gas: <span id="lastGasVormonat">–</span> → <span id="lastGasAktuell">–</span> m³</p>
     </div>
 
     <label>?? Stromtarif ausw�hlen:</label>
