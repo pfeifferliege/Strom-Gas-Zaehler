@@ -108,7 +108,9 @@
     
     }  
     
-  </style></head><body onload="ladeGespeicherteDaten(); updateTarife();">  <button onclick="ladeICSDatei()">Ableseerinnerung in Kalender eintragen</button>  
+  </style></head><body onload="ladeGespeicherteDaten(); updateTarife();">  
+
+      <button onclick="ladeICSDatei()">Ableseerinnerung in Kalender eintragen</button>
 <hr>
 
 <h3>💼 Aktuelle Bilanz</h3>  <p class="result">Guthaben/Nachzahlung: <span id="guthabenKurz" class="positive">0,00 €</span></p>  
@@ -391,6 +393,7 @@ localStorage.clear();
 location.reload();
 
 }
+
 function ladeICSDatei() {
   const icsContent = `
 BEGIN:VCALENDAR
@@ -409,9 +412,12 @@ END:VCALENDAR`.trim();
 
   const blob = new Blob([icsContent], { type: 'text/calendar' });
   const url = URL.createObjectURL(blob);
+  
+  console.log(url);  // Ausgabe der URL in der Konsole
 
   // Neuer Tab öffnen – kann das Kalenderprogramm triggern (je nach System)
   window.open(url, '_blank');
+
 }
 
 function getEndOfMonthDate(hour = 18, minute = 0, second = 0, durationMinutes = 0) {
