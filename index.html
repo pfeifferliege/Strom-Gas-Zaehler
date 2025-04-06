@@ -294,12 +294,15 @@ localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
     document.getElementById("guthabenKurz").className = parseFloat(gespeichertesGuthaben) >= 0 ? "positive" : "negative";
   }
 }
+function rechnerLeeren() {
+  localStorage.clear();
 
+  // Abschlagsfeld leeren
+  document.getElementById("monatlicherAbschlagInput").value = "";
+  monatlicherAbschlag = 0;
 
-  function rechnerLeeren() {
-    localStorage.clear();
-    location.reload();
-  }
+  location.reload();
+} 
 </script>
 </body>
 </html>
