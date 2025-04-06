@@ -159,7 +159,12 @@
   localStorage.setItem("monatlicherAbschlag", monatlicherAbschlag);
 }
 
-
+function updateTarife() {
+  const stromTarif = document.getElementById("stromTarif").value;
+  const gasTarif = document.getElementById("gasTarif").value;
+  localStorage.setItem("stromTarif", stromTarif);
+  localStorage.setItem("gasTarif", gasTarif);
+}
  function berechnen() {
   let stromVormonat = parseFloat(document.getElementById("stromVormonat").value) || 0;
   let stromAktuell = parseFloat(document.getElementById("stromAktuell").value) || 0;
@@ -258,7 +263,7 @@ localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
   const gespeicherteErgebnisse = JSON.parse(localStorage.getItem("ergebnisse") || "[]");
   document.getElementById("monatsErgebnisse").innerHTML = gespeicherteErgebnisse.map(entry => entry.html).join('');
 
-  // 📌 Eingestellte Tarife & Abschlag zurücksetzen
+  // Eingestellte Tarife & Abschlag zurücksetzen
   const gespeicherterStromTarif = localStorage.getItem("stromTarif");
   const gespeicherterGasTarif = localStorage.getItem("gasTarif");
   const gespeicherterAbschlag = localStorage.getItem("monatlicherAbschlag");
@@ -275,7 +280,7 @@ localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
   }
 
   // Gesamtergebnisse wiederherstellen
-   document.getElementById("gesamtStrom").textContent = parseFloat(localStorage.getItem("gesamtStromKosten") || 0).toFixed(2) + " €";
+  document.getElementById("gesamtStrom").textContent = parseFloat(localStorage.getItem("gesamtStromKosten") || 0).toFixed(2) + " €";
   document.getElementById("gesamtGas").textContent = parseFloat(localStorage.getItem("gesamtGasKosten") || 0).toFixed(2) + " €";
   document.getElementById("gesamtSumme").textContent = (parseFloat(localStorage.getItem("gesamtStromKosten") || 0) + parseFloat(localStorage.getItem("gesamtGasKosten") || 0)).toFixed(2) + " €";
   document.getElementById("gezahltAbschlag").textContent = parseFloat(localStorage.getItem("gezahlteAbschlaege") || 0).toFixed(2) + " €";
@@ -287,8 +292,9 @@ localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
     document.getElementById("guthabenKurz").textContent = parseFloat(gespeichertesGuthaben).toFixed(2) + " €";
     document.getElementById("guthaben").className = parseFloat(gespeichertesGuthaben) >= 0 ? "positive" : "negative";
     document.getElementById("guthabenKurz").className = parseFloat(gespeichertesGuthaben) >= 0 ? "positive" : "negative";
-  } 
+  }
 }
+
 
   function rechnerLeeren() {
     localStorage.clear();
@@ -297,4 +303,3 @@ localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
 </script>
 </body>
 </html>
-
