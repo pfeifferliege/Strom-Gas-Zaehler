@@ -531,7 +531,7 @@ localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
   
   }
   function ladeICSDatei() {
-    const icsContent = `
+  const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//DeinTool//Zählerstand-Erinnerung//DE
@@ -546,14 +546,12 @@ RRULE:FREQ=MONTHLY;BYMONTHDAY=-1
 END:VEVENT
 END:VCALENDAR`.trim();
 
-    const blob = new Blob([icsContent], { type: 'text/calendar' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "zaehlerstand_erinnerung.ics";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  const blob = new Blob([icsContent], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+
+  // Neuer Tab öffnen – kann das Kalenderprogramm triggern (je nach System)
+  window.open(url, '_blank');
+}
 
   function getEndOfMonthDate(hour = 18, minute = 0, second = 0, durationMinutes = 0) {
     const now = new Date();
