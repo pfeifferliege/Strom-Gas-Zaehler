@@ -299,164 +299,93 @@ function updateTarife() {
   
 
   
- function berechnen() {
-  
+ 
+  function berechnen() {
   let stromVormonat = parseFloat(document.getElementById("stromVormonat").value) || 0;
-  
   let stromAktuell = parseFloat(document.getElementById("stromAktuell").value) || 0;
-  
   let gasVormonat = parseFloat(document.getElementById("gasVormonat").value) || 0;
-  
   let gasAktuell = parseFloat(document.getElementById("gasAktuell").value) || 0;
-  
 
-  
-  let stromVerbrauch = Math.max(0, stromAktuell - stromVormonat);
-  
-  let stromTarif = stromPreise[document.getElementById("stromTarif").value];
-  
-  let stromKosten = (stromVerbrauch * stromTarif.preisProKWh) + stromTarif.grundgebuehr;
-  
+  // Berechnung für Strom, wenn die Zählerstände eingegeben wurden
+  let stromKosten = 0;
+  let stromVerbrauch = 0;
+  if (stromAktuell > 0 && stromVormonat > 0) {
+    stromVerbrauch = Math.max(0, stromAktuell - stromVormonat);
+    let stromTarif = stromPreise[document.getElementById("stromTarif").value];
+    stromKosten = (stromVerbrauch * stromTarif.preisProKWh) + stromTarif.grundgebuehr;
+  }
 
-  
-  let gasVerbrauchM3 = Math.max(0, gasAktuell - gasVormonat);
-  
-  let gasVerbrauchKWh = gasVerbrauchM3 * 10.5;
-  
-  let gasKosten = berechneGasKosten(gasVerbrauchKWh, document.getElementById("gasTarif").value);
-  
+  // Berechnung für Gas, wenn die Zählerstände eingegeben wurden
+  let gasKosten = 0;
+  let gasVerbrauchM3 = 0;
+  let gasVerbrauchKWh = 0;
+  if (gasAktuell > 0 && gasVormonat > 0) {
+    gasVerbrauchM3 = Math.max(0, gasAktuell - gasVormonat);
+    gasVerbrauchKWh = gasVerbrauchM3 * 10.5;
+    gasKosten = berechneGasKosten(gasVerbrauchKWh, document.getElementById("gasTarif").value);
+  }
+
   let gesamtkosten = stromKosten + gasKosten;
-  
   let bilanz = monatlicherAbschlag - gesamtkosten;
-  
 
-  
   gesamtStromKosten += stromKosten;
-  
   gesamtGasKosten += gasKosten;
-  
   gezahlteAbschlaege += monatlicherAbschlag;
-  
 
-  
   let timestamp = `${new Date().toLocaleString('de-DE', { month: 'long' })} ${aktuellesJahr}`;
-  
 
-  
   let ergebnis = `
-  
     <div class="result">
-  
       <strong>${timestamp}</strong><br>
-  
       <hr>
-  
-      <strong>🔌 Strom:</strong><br>
-  
+      ${stromKosten > 0 ? `<strong>🔌 Strom:</strong><br>
       Verbrauch: ${stromAktuell} - ${stromVormonat} = ${stromVerbrauch} kWh<br>
-  
-      Kosten: ${stromKosten.toFixed(2)} €<br>
-  
-      <hr>
-  
-      <strong>🔥 Gas:</strong><br>
-  
+      Kosten: ${stromKosten.toFixed(2)} €<br><hr>` : ''}
+      ${gasKosten > 0 ? `<strong>🔥 Gas:</strong><br>
       Verbrauch: ${gasAktuell} - ${gasVormonat} = ${gasVerbrauchM3} m³<br>
-  
       Umrechnung: ${gasVerbrauchKWh.toFixed(2)} kWh<br>
-  
-      Kosten: ${gasKosten.toFixed(2)} €<br>
-  
-      <hr>
-  
+      Kosten: ${gasKosten.toFixed(2)} €<br><hr>` : ''}
       Gesamtkosten: <span class="${gesamtkosten >= monatlicherAbschlag ? 'negative' : 'positive'}">${gesamtkosten.toFixed(2)} €</span><br>
-  
       <strong style="color: blue;">Gezahlter Abschlag: ${monatlicherAbschlag.toFixed(2)} €</strong><br>
-  
       Guthaben/Nachzahlung: <span class="${bilanz >= 0 ? 'positive' : 'negative'}">${bilanz.toFixed(2)} €</span>
-  
     </div><hr>`;
-  
 
-  
   const ergebnisse = JSON.parse(localStorage.getItem("ergebnisse") || "[]");
-  
   ergebnisse.unshift({ timestamp, html: ergebnis });
-  
   localStorage.setItem("ergebnisse", JSON.stringify(ergebnisse));
-  
 
-  
   // Gesamtsumme speichern
-  
   localStorage.setItem("gesamtStromKosten", gesamtStromKosten.toFixed(2));
-  
   localStorage.setItem("gesamtGasKosten", gesamtGasKosten.toFixed(2));
-  
   localStorage.setItem("gesamtSumme", (gesamtStromKosten + gesamtGasKosten).toFixed(2));
-  
   localStorage.setItem("gezahlteAbschlaege", gezahlteAbschlaege.toFixed(2));
-  
 
-  
   document.getElementById("monatsErgebnisse").innerHTML = ergebnisse.map(entry => entry.html).join('');
-  
 
-  
   // Gesamtsumme anzeigen
-  
   document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
-  
   document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
-  
   document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
-  
   document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
-  
 
-  
   // Bilanz berechnen und anzeigen
-  
   let gesamterBilanz = gezahlteAbschlaege - (gesamtStromKosten + gesamtGasKosten);
-  
   document.getElementById("guthaben").textContent = gesamterBilanz.toFixed(2) + " €";
-  
   document.getElementById("guthaben").className = gesamterBilanz >= 0 ? "positive" : "negative";
-  
   document.getElementById("guthabenKurz").textContent = gesamterBilanz.toFixed(2) + " €";
-  
   document.getElementById("guthabenKurz").className = gesamterBilanz >= 0 ? "positive" : "negative";
-  
 
-  
   document.getElementById("stromVormonat").value = stromAktuell;
-  
   document.getElementById("gasVormonat").value = gasAktuell;
-  
 
-  
   localStorage.setItem("stromVormonat", stromAktuell);
-  
   localStorage.setItem("gasVormonat", gasAktuell);
-  
-localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
-  
+  localStorage.setItem("gesamtBilanz", gesamterBilanz.toFixed(2));
 
-  
-
-  
   document.getElementById("stromAktuell").value = "";
-  
   document.getElementById("gasAktuell").value = "";
-  
 }
-  
 
-  
-
-  
-
-  
   function berechneGasKosten(kWh, tarifName) {
   
     let staffel = gasPreise[tarifName];
