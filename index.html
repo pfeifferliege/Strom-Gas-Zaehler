@@ -1,21 +1,114 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Strom- und Gaskosten Rechner</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; max-width: 700px; }
-  input[type="number"] { width: 120px; padding: 6px; margin: 5px 10px 15px 0; }
-  select { padding: 6px; margin: 5px 10px 15px 0; }
-  button { padding: 8px 15px; margin-top: 10px; cursor: pointer; }
-  .result { margin-bottom: 15px; }
-  hr { border: 1px solid #ddd; margin: 10px 0; }
-  .positive { color: green; font-weight: bold; }
-  .negative { color: red; font-weight: bold; }
-  strong { font-weight: bold; }
-</style>
-</head>
+<!DOCTYPE html>  <html lang="de"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Strom- & Gasrechner</title>  <style>
+  
+    body {
+  
+      font-family: Arial, sans-serif;
+  
+      max-width: 700px;
+  
+      margin: auto;
+  
+      padding: 20px;
+  
+      background-color: #f4f4f4;
+    }
+      
+      .container {
+  
+      background: white;
+  
+      padding: 15px;
+  
+      border-radius: 8px;
+  
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  
+  }
+    
+  
+    h2, h3 { text-align: center; }
+  
+    label { font-weight: bold; display: block; margin-top: 10px; }
+  
+    input, select {
+  
+      width: 80%;
+  
+      padding: 10px;
+  
+      margin-top: 5px;
+  
+      border: 1px solid #ccc;
+  
+      border-radius: 5px;
+  
+      font-size: 16px;
+  
+    }
+  
+    .result {
+  
+      font-weight: bold;
+  
+      margin-top: 10px;
+  
+    }
+  
+    .positive { color: green; }
+  
+    .negative { color: red; }
+  
+    button {
+  
+      width: 100%;
+  
+      padding: 12px;
+  
+      margin-top: 15px;
+  
+      font-size: 16px;
+  
+      background: #007BFF;
+  
+      color: white;
+  
+      border: none;
+  
+      border-radius: 5px;
+  
+      cursor: pointer;
+  
+    }
+  
+    button:hover { background: #0056b3; }
+  
+    hr { margin: 20px 0; border: 1px solid #ddd; }
+  
+    .summary-box {
+  
+      border: 2px solid black;
+  
+      padding: 15px;
+  
+      font-weight: bold;
+  
+      background-color: #fffbe6;
+  
+      border-radius: 5px;
+  
+      margin-bottom: 20px;
+  
+    }
+  
+    .double-line {
+  
+      border-top: 3px double black;
+  
+      margin: 20px 0;
+  
+    }
+  
+  </style></head
 <body>
 
 <h2>Strom- und Gaskosten Rechner</h2>
