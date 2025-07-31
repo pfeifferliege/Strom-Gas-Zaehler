@@ -1,227 +1,233 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Strom- & Gasrechner</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 450px;
-            margin: auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h2, h3 { text-align: center; }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        input {
-            width: 80%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .result {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .positive { color: green; }
-        .negative { color: red; }
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            font-size: 16px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover { background: #0056b3; }
-        hr { margin: 20px 0; border: 1px solid #ddd; }
-        .summary-box {
-            border: 2px solid black;
-            padding: 15px;
-            font-weight: bold;
-            background-color: #fffbe6;
-            border-radius: 5px;
-        }
-        .double-line {
-            border-top: 3px double black;
-            margin: 20px 0;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Strom- & Gasrechner</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 450px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+    }
+    .container {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2, h3 { text-align: center; }
+    label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+    }
+    input {
+        width: 80%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .result {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .positive { color: green; }
+    .negative { color: red; }
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        font-size: 16px;
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    hr { margin: 20px 0; border: 1px solid #ddd; }
+    .summary-box {
+        border: 2px solid black;
+        padding: 15px;
+        font-weight: bold;
+        background-color: #fffbe6;
+        border-radius: 5px;
+    }
+    .double-line {
+        border-top: 3px double black;
+        margin: 20px 0;
+    }
+</style>
 </head>
 <body onload="ladeGespeicherteDaten()">
-    <div class="container">
-        <h2>Strom- & Gasrechner</h2>
+<div class="container">
+    <h2>Strom- & Gasrechner</h2>
 
-        <label for="monatlicherAbschlagInput">Monatlicher Abschlag (€)</label>
-        <input type="number" id="monatlicherAbschlagInput" value="266" onchange="updateAbschlag()" step="0.01" min="0" />
+    <label for="monatlicherAbschlagInput">Monatlicher Abschlag (€)</label>
+    <input type="number" id="monatlicherAbschlagInput" value="266" onchange="updateAbschlag()" step="0.01" min="0" />
 
-        <h3>🔌 Strom</h3>
-        <label for="stromVormonat">Vormonatszählerstand (kWh)</label>
-        <input type="number" id="stromVormonat" step="0.01" min="0" />
-        <label for="stromAktuell">Aktueller Zählerstand (kWh)</label>
-        <input type="number" id="stromAktuell" step="0.01" min="0" />
+    <h3>🔌 Strom</h3>
+    <label for="stromVormonat">Vormonatszählerstand (kWh)</label>
+    <input type="number" id="stromVormonat" step="0.01" min="0" />
+    <label for="stromAktuell">Aktueller Zählerstand (kWh)</label>
+    <input type="number" id="stromAktuell" step="0.01" min="0" />
 
-        <h3>🔥 Gas</h3>
-        <label for="gasVormonat">Vormonatszählerstand (m³)</label>
-        <input type="number" id="gasVormonat" step="0.01" min="0" />
-        <label for="gasAktuell">Aktueller Zählerstand (m³)</label>
-        <input type="number" id="gasAktuell" step="0.01" min="0" />
+    <h3>🔥 Gas</h3>
+    <label for="gasVormonat">Vormonatszählerstand (m³)</label>
+    <input type="number" id="gasVormonat" step="0.01" min="0" />
+    <label for="gasAktuell">Aktueller Zählerstand (m³)</label>
+    <input type="number" id="gasAktuell" step="0.01" min="0" />
 
-        <button onclick="berechnen()">Berechnen</button>
+    <button onclick="berechnen()">Berechnen</button>
 
-        <hr />
+    <hr />
 
-        <h3>📅 Monatliche Ergebnisse <span id="currentYear"></span></h3>
-        <div id="monatsErgebnisse"></div>
+    <h3>📅 Monatliche Ergebnisse <span id="currentYear"></span></h3>
+    <div id="monatsErgebnisse"></div>
 
-        <div class="double-line"></div>
+    <div class="double-line"></div>
 
-        <div class="summary-box">
-            <h3>💰 Gesamtsumme <span id="currentYearSummary"></span></h3>
-            <p class="result">Stromkosten Gesamt: <span id="gesamtStrom">0,00 €</span></p>
-            <p class="result">Gaskosten Gesamt: <span id="gesamtGas">0,00 €</span></p>
-            <p class="result">Gesamtkosten: <span id="gesamtSumme">0,00 €</span></p>
-            <p class="result">Gezahlte Abschläge: <span id="gezahltAbschlag">0,00 €</span></p>
-            <p class="result">Guthaben/Nachzahlung: <span id="guthaben" class="positive">0,00 €</span></p>
-        </div>
-
-        <button onclick="rechnerLeeren()">Rechner leeren</button>
+    <div class="summary-box">
+        <h3>💰 Gesamtsumme <span id="currentYearSummary"></span></h3>
+        <p class="result">Stromkosten Gesamt: <span id="gesamtStrom">0,00 €</span></p>
+        <p class="result">Gaskosten Gesamt: <span id="gesamtGas">0,00 €</span></p>
+        <p class="result">Gesamtkosten: <span id="gesamtSumme">0,00 €</span></p>
+        <p class="result">Gezahlte Abschläge: <span id="gezahltAbschlag">0,00 €</span></p>
+        <p class="result">Guthaben/Nachzahlung: <span id="guthaben" class="positive">0,00 €</span></p>
     </div>
 
-    <script>
-        let monatlicherAbschlag = 266.00;
-        let gesamtStromKosten = 0;
-        let gesamtGasKosten = 0;
-        let gezahlteAbschlaege = 0;
-        const aktuellesJahr = new Date().getFullYear();
+    <button onclick="rechnerLeeren()">Rechner leeren</button>
+</div>
 
-        document.getElementById("currentYear").textContent = aktuellesJahr;
-        document.getElementById("currentYearSummary").textContent = aktuellesJahr;
+<script>
+let monatlicherAbschlag = 266.00;
+let gesamtStromKosten = 0;
+let gesamtGasKosten = 0;
+let gezahlteAbschlaege = 0;
+const aktuellesJahr = new Date().getFullYear();
 
-        function updateAbschlag() {
-            const val = parseFloat(document.getElementById("monatlicherAbschlagInput").value);
-            monatlicherAbschlag = isNaN(val) ? 0 : val;
-        }
+document.getElementById("currentYear").textContent = aktuellesJahr;
+document.getElementById("currentYearSummary").textContent = aktuellesJahr;
 
-        function berechnen() {
-            const stromVormonat = parseFloat(document.getElementById("stromVormonat").value);
-            const stromAktuell = parseFloat(document.getElementById("stromAktuell").value);
-            const gasVormonat = parseFloat(document.getElementById("gasVormonat").value);
-            const gasAktuell = parseFloat(document.getElementById("gasAktuell").value);
+function updateAbschlag() {
+    const val = parseFloat(document.getElementById("monatlicherAbschlagInput").value);
+    monatlicherAbschlag = isNaN(val) ? 0 : val;
+}
 
-            if (
-                isNaN(stromVormonat) || isNaN(stromAktuell) || 
-                isNaN(gasVormonat) || isNaN(gasAktuell)
-            ) {
-                alert("Bitte alle Felder korrekt ausfüllen!");
-                return;
-            }
-            if (stromAktuell < stromVormonat) {
-                alert("Aktueller Stromzählerstand muss größer oder gleich dem Vormonatsstand sein!");
-                return;
-            }
-            if (gasAktuell < gasVormonat) {
-                alert("Aktueller Gaszählerstand muss größer oder gleich dem Vormonatsstand sein!");
-                return;
-            }
+function berechnen() {
+    const stromVormonat = parseFloat(document.getElementById("stromVormonat").value);
+    const stromAktuell = parseFloat(document.getElementById("stromAktuell").value);
+    const gasVormonat = parseFloat(document.getElementById("gasVormonat").value);
+    const gasAktuell = parseFloat(document.getElementById("gasAktuell").value);
 
-            // Berechnung Stromkosten
-            let stromKosten = 0;
-            if (stromAktuell > stromVormonat) {
-                const stromVerbrauch = stromAktuell - stromVormonat;
-                stromKosten = stromVerbrauch * 0.3928 + 14.99;
-            }
+    if (
+        isNaN(stromVormonat) || isNaN(stromAktuell) || 
+        isNaN(gasVormonat) || isNaN(gasAktuell)
+    ) {
+        alert("Bitte alle Felder korrekt ausfüllen!");
+        return;
+    }
+    if (stromAktuell < stromVormonat) {
+        alert("Aktueller Stromzählerstand muss größer oder gleich dem Vormonatsstand sein!");
+        return;
+    }
+    if (gasAktuell < gasVormonat) {
+        alert("Aktueller Gaszählerstand muss größer oder gleich dem Vormonatsstand sein!");
+        return;
+    }
 
-            // Berechnung Gaskosten
-            let gasKosten = 0;
-            if (gasAktuell > gasVormonat) {
-                const gasVerbrauchM3 = gasAktuell - gasVormonat;
-                const gasVerbrauchKWh = gasVerbrauchM3 * 10.5;
-                const gasPreis = 0.1490;
-                const grundpreisGas = 32.25 / 12;
-                gasKosten = gasVerbrauchKWh * gasPreis + grundpreisGas;
-            }
+    // Berechnung Stromkosten
+    let stromKosten = 0;
+    let stromVerbrauch = 0;
+    if (stromAktuell > stromVormonat) {
+        stromVerbrauch = stromAktuell - stromVormonat;
+        stromKosten = stromVerbrauch * 0.3928 + 14.99;
+    }
 
-            const gesamtkosten = stromKosten + gasKosten;
-            const bilanz = monatlicherAbschlag - gesamtkosten;
+    // Berechnung Gaskosten
+    let gasKosten = 0;
+    let gasVerbrauchM3 = 0;
+    let gasVerbrauchKWh = 0;
+    if (gasAktuell > gasVormonat) {
+        gasVerbrauchM3 = gasAktuell - gasVormonat;
+        gasVerbrauchKWh = gasVerbrauchM3 * 10.5;
+        const gasPreis = 0.1490;
+        const grundpreisGas = 32.25 / 12;
+        gasKosten = gasVerbrauchKWh * gasPreis + grundpreisGas;
+    }
 
-            gesamtStromKosten += stromKosten;
-            gesamtGasKosten += gasKosten;
-            gezahlteAbschlaege += monatlicherAbschlag;
+    const gesamtkosten = stromKosten + gasKosten;
+    const bilanz = monatlicherAbschlag - gesamtkosten;
 
-            const gesamtkostenClass = gesamtkosten > monatlicherAbschlag ? 'negative' : 'positive';
-            const bilanzClass = bilanz >= 0 ? 'positive' : 'negative';
+    gesamtStromKosten += stromKosten;
+    gesamtGasKosten += gasKosten;
+    gezahlteAbschlaege += monatlicherAbschlag;
 
-            const aktuellerMonatName = new Date().toLocaleString('de-DE', { month: 'long' });
+    const gesamtkostenClass = gesamtkosten > monatlicherAbschlag ? 'negative' : 'positive';
+    const bilanzClass = bilanz >= 0 ? 'positive' : 'negative';
 
-            const ergebnisHTML = `
-                <div class="result">
-                    <strong>${aktuellerMonatName} ${aktuellesJahr}</strong><br>
-                    Stromkosten: ${stromKosten.toFixed(2)} €<br>
-                    Gaskosten: ${gasKosten.toFixed(2)} €<br>
-                    Gesamtkosten: <span class="${gesamtkostenClass}">${gesamtkosten.toFixed(2)} €</span><br>
-                    Guthaben/Nachzahlung: <span class="${bilanzClass}">${bilanz.toFixed(2)} €</span>
-                </div>
-                <hr />
-            `;
+    const aktuellerMonatName = new Date().toLocaleString('de-DE', { month: 'long' });
 
-            // Ergebnisse oben anhängen
-            const ergebnisseDiv = document.getElementById("monatsErgebnisse");
-            ergebnisseDiv.innerHTML = ergebnisHTML + ergebnisseDiv.innerHTML;
+    const ergebnisHTML = `
+        <div class="result">
+            <strong>${aktuellerMonatName} ${aktuellesJahr}</strong><br>
+            Stromverbrauch: ${stromVerbrauch.toFixed(2)} kWh<br>
+            Stromkosten: <span class="${stromKosten >= 0 ? 'positive' : 'negative'}">${stromKosten.toFixed(2)} €</span><br>
+            Gasverbrauch: ${gasVerbrauchM3.toFixed(2)} m³ (${gasVerbrauchKWh.toFixed(2)} kWh)<br>
+            Gaskosten: <span class="${gasKosten >= 0 ? 'positive' : 'negative'}">${gasKosten.toFixed(2)} €</span><br>
+            Gesamtkosten: <span class="${gesamtkostenClass}">${gesamtkosten.toFixed(2)} €</span><br>
+            Guthaben/Nachzahlung: <span class="${bilanzClass}">${bilanz.toFixed(2)} €</span>
+        </div>
+        <hr />
+    `;
 
-            // Übersicht aktualisieren
-            document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
-            document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
-            document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
-            document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
+    const ergebnisseDiv = document.getElementById("monatsErgebnisse");
+    ergebnisseDiv.innerHTML = ergebnisHTML + ergebnisseDiv.innerHTML;
 
-            const guthabenElem = document.getElementById("guthaben");
-            guthabenElem.textContent = (gezhalteAbschlaege - (gesamtStromKosten + gesamtGasKosten)).toFixed(2) + " €";
-            guthabenElem.className = bilanz >= 0 ? "positive" : "negative";
+    // Übersicht aktualisieren
+    document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
+    document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
+    const gesamtkostenGesamt = gesamtStromKosten + gesamtGasKosten;
+    document.getElementById("gesamtSumme").textContent = gesamtkostenGesamt.toFixed(2) + " €";
+    document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
 
-            // Aktuelle Zählerstände speichern (für nächstes Mal als Vormonat)
-            localStorage.setItem("stromVormonat", stromAktuell);
-            localStorage.setItem("gasVormonat", gasAktuell);
+    const guthaben = gezahlteAbschlaege - gesamtkostenGesamt;
+    const guthabenElem = document.getElementById("guthaben");
+    guthabenElem.textContent = guthaben.toFixed(2) + " €";
+    guthabenElem.className = guthaben >= 0 ? "positive" : "negative";
 
-            // Felder für aktuelle Zählerstände leeren
-            document.getElementById("stromAktuell").value = "";
-            document.getElementById("gasAktuell").value = "";
-        }
+    // Aktuelle Zählerstände speichern (für nächstes Mal als Vormonat)
+    localStorage.setItem("stromVormonat", stromAktuell);
+    localStorage.setItem("gasVormonat", gasAktuell);
 
-        function rechnerLeeren() {
-            if (confirm("Wirklich alle Daten löschen?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+    // Felder für aktuelle Zählerstände leeren
+    document.getElementById("stromAktuell").value = "";
+    document.getElementById("gasAktuell").value = "";
+}
 
-        function ladeGespeicherteDaten() {
-            const stromVormonatGespeichert = localStorage.getItem("stromVormonat");
-            const gasVormonatGespeichert = localStorage.getItem("gasVormonat");
+function rechnerLeeren() {
+    if (confirm("Wirklich alle Daten löschen?")) {
+        localStorage.clear();
+        location.reload();
+    }
+}
 
-            if (stromVormonatGespeichert !== null) {
-                document.getElementById("stromVormonat").value = stromVormonatGespeichert;
-            }
-            if (gasVormonatGespeichert !== null) {
-                document.getElementById("gasVormonat").value = gasVormonatGespeichert;
-            }
-        }
-    </script>
+function ladeGespeicherteDaten() {
+    const stromVormonatGespeichert = localStorage.getItem("stromVormonat");
+    const gasVormonatGespeichert = localStorage.getItem("gasVormonat");
+    if (stromVormonatGespeichert) {
+        document.getElementById("stromVormonat").value = stromVormonatGespeichert;
+    }
+    if (gasVormonatGespeichert) {
+        document.getElementById("gasVormonat").value = gasVormonatGespeichert;
+    }
+}
+</script>
 </body>
 </html>
+
