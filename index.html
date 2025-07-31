@@ -108,6 +108,7 @@
   <div id="monatsErgebnisse"></div>
 
   <div class="double-line"></div>
+
   <div class="summary-box">
     <h3>🧾 Gesamtsumme <span id="currentYearSummary"></span></h3>
     <p class="result">Stromkosten Gesamt: <span id="gesamtStrom">0,00 €</span></p>
@@ -119,173 +120,219 @@
 
   <button onclick="rechnerLeeren()">Rechner leeren</button>
 
-  <script>
-    let monatlicherAbschlag = 0;
-    let gesamtStromKosten = 0;
-    let gesamtGasKosten = 0;
-    let gezahlteAbschlaege = 0;
-    let aktuellesJahr = new Date().getFullYear();
+<script>
+  let monatlicherAbschlag = 0;
+  let gesamtStromKosten = 0;
+  let gesamtGasKosten = 0;
+  let gezahlteAbschlaege = 0;
+  let aktuellesJahr = new Date().getFullYear();
 
-    const stromPreise = {
-      "Klima Classic": { preisProKWh: 0.3928, grundgebuehr: 14.99 },
-      "Klima Service flex": { preisProKWh: 0.3714, grundgebuehr: 13.33 },
-      "Klima Nacht flex (8+0)": { preisProKWh: 0.3131, grundgebuehr: 10.25 },
-      "Klima Nacht flex (8+2)": { preisProKWh: 0.3159, grundgebuehr: 10.25 },
-      "Klima Nacht flex (8+4)": { preisProKWh: 0.3211, grundgebuehr: 10.25 },
-      "Klima regio-A-flex": { preisProKWh: 0.3516, grundgebuehr: 12.79 },
-      "Klima regio-M-flex": { preisProKWh: 0.3334, grundgebuehr: 12.65 }
-    };
+  const stromPreise = {
+    "Klima Classic": { preisProKWh: 0.3928, grundgebuehr: 14.99 },
+    "Klima Service flex": { preisProKWh: 0.3714, grundgebuehr: 13.33 },
+    "Klima Nacht flex (8+0)": { preisProKWh: 0.3131, grundgebuehr: 10.25 },
+    "Klima Nacht flex (8+2)": { preisProKWh: 0.3159, grundgebuehr: 10.25 },
+    "Klima Nacht flex (8+4)": { preisProKWh: 0.3211, grundgebuehr: 10.25 },
+    "Klima regio-A-flex": { preisProKWh: 0.3516, grundgebuehr: 12.79 },
+    "Klima regio-M-flex": { preisProKWh: 0.3334, grundgebuehr: 12.65 }
+  };
 
-    const gasPreise = {
-      "Classic Gas (allgem. Erdgaspreise)": [
-        { bis: 2700, preis: 0.1896, grundgebuehr: 3.75 },
-        { bis: 13000, preis: 0.1612, grundgebuehr: 13.75 },
-        { bis: 65400, preis: 0.1490, grundgebuehr: 31.25 },
-        { bis: Infinity, preis: 0.1547, grundgebuehr: 0 }
-      ],
-      "Sonderangebot Service Gas flex": [
-        { bis: 2700, preis: 0.1711, grundgebuehr: 3.00 },
-        { bis: 13000, preis: 0.1434, grundgebuehr: 12.25 },
-        { bis: 65400, preis: 0.1309, grundgebuehr: 29.00 },
-        { bis: Infinity, preis: 0.1361, grundgebuehr: 0 }
-      ]
-    };
+  const gasPreise = {
+    "Classic Gas (allgem. Erdgaspreise)": [
+      { bis: 2700, preis: 0.1896, grundgebuehr: 3.75 },
+      { bis: 13000, preis: 0.1612, grundgebuehr: 13.75 },
+      { bis: 65400, preis: 0.1490, grundgebuehr: 31.25 },
+      { bis: Infinity, preis: 0.1547, grundgebuehr: 0 }
+    ],
+    "Sonderangebot Service Gas flex": [
+      { bis: 2700, preis: 0.1711, grundgebuehr: 3.00 },
+      { bis: 13000, preis: 0.1434, grundgebuehr: 12.25 },
+      { bis: 65400, preis: 0.1309, grundgebuehr: 29.00 },
+      { bis: Infinity, preis: 0.1361, grundgebuehr: 0 }
+    ]
+  };
 
-    function berechneGasKosten(kWh, tarifName) {
-      let staffel = gasPreise[tarifName];
-      for (let stufe of staffel) {
-        if (kWh <= stufe.bis) {
-          return (kWh * stufe.preis) + stufe.grundgebuehr;
+  function updateAbschlag() {
+    monatlicherAbschlag = parseFloat(document.getElementById("monatlicherAbschlagInput").value) || 0;
+    localStorage.setItem("monatlicherAbschlag", monatlicherAbschlag);
+  }
+
+  function updateTarife() {
+    const stromTarif = document.getElementById("stromTarif").value;
+    const gasTarif = document.getElementById("gasTarif").value;
+    localStorage.setItem("stromTarif", stromTarif);
+    localStorage.setItem("gasTarif", gasTarif);
+  }
+
+  function berechnen() {
+    let stromVormonat = parseFloat(document.getElementById("stromVormonat").value) || 0;
+    let stromAktuell = parseFloat(document.getElementById("stromAktuell").value) || 0;
+    let gasVormonat = parseFloat(document.getElementById("gasVormonat").value) || 0;
+    let gasAktuell = parseFloat(document.getElementById("gasAktuell").value) || 0;
+
+    // Stromkosten berechnen
+    let stromKosten = 0;
+    let stromVerbrauch = 0;
+    if (stromAktuell > 0 && stromVormonat > 0) {
+      stromVerbrauch = Math.max(0, stromAktuell - stromVormonat);
+      let stromTarif = stromPreise[document.getElementById("stromTarif").value];
+      stromKosten = (stromVerbrauch * stromTarif.preisProKWh) + stromTarif.grundgebuehr;
+    }
+
+    // Gaskosten berechnen
+    let gasKosten = 0;
+    let gasVerbrauchM3 = 0;
+    let gasVerbrauchKWh = 0;
+    if (gasAktuell > 0 && gasVormonat > 0) {
+      gasVerbrauchM3 = Math.max(0, gasAktuell - gasVormonat);
+      gasVerbrauchKWh = gasVerbrauchM3 * 10.5;
+      gasKosten = berechneGasKosten(gasVerbrauchKWh, document.getElementById("gasTarif").value);
+    }
+
+    let gesamtkosten = stromKosten + gasKosten;
+    let bilanz = monatlicherAbschlag - gesamtkosten;
+
+    gesamtStromKosten += stromKosten;
+    gesamtGasKosten += gasKosten;
+    gezahlteAbschlaege += monatlicherAbschlag;
+
+    let timestamp = `${new Date().toLocaleString('de-DE', { month: 'long' })} ${aktuellesJahr}`;
+
+    // Monatsergebnis erzeugen
+    let monatErgebnisHtml = `
+      <div style="border-bottom:1px solid black; margin-bottom:8px; padding-bottom:8px;">
+        <strong>${timestamp}</strong><br/>
+        Stromverbrauch: ${stromVerbrauch.toFixed(2)} kWh<br/>
+        Stromkosten: ${stromKosten.toFixed(2)} €<br/>
+        Gasverbrauch: ${gasVerbrauchM3.toFixed(2)} m³ (${gasVerbrauchKWh.toFixed(2)} kWh)<br/>
+        Gaskosten: ${gasKosten.toFixed(2)} €<br/>
+        Gesamtkosten: ${gesamtkosten.toFixed(2)} €<br/>
+        Abschlag: ${monatlicherAbschlag.toFixed(2)} €<br/>
+        <span class="${bilanz >= 0 ? 'positive' : 'negative'}">Bilanz: ${bilanz.toFixed(2)} €</span>
+      </div>`;
+
+    // Monatsergebnisse anhängen
+    let monatsErgebnisseContainer = document.getElementById("monatsErgebnisse");
+    monatsErgebnisseContainer.insertAdjacentHTML('afterbegin', monatErgebnisHtml);
+
+    // Gesamtergebnisse aktualisieren
+    document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
+    document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
+    document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
+    document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
+
+    let gesamtBilanz = gezahlteAbschlaege - (gesamtStromKosten + gesamtGasKosten);
+    let guthabenEl = document.getElementById("guthaben");
+    let guthabenKurzEl = document.getElementById("guthabenKurz");
+    guthabenEl.textContent = gesamtBilanz.toFixed(2) + " €";
+    guthabenKurzEl.textContent = gesamtBilanz.toFixed(2) + " €";
+
+    if (gesamtBilanz >= 0) {
+      guthabenEl.classList.add("positive");
+      guthabenEl.classList.remove("negative");
+      guthabenKurzEl.classList.add("positive");
+      guthabenKurzEl.classList.remove("negative");
+    } else {
+      guthabenEl.classList.add("negative");
+      guthabenEl.classList.remove("positive");
+      guthabenKurzEl.classList.add("negative");
+      guthabenKurzEl.classList.remove("positive");
+    }
+
+    // Daten speichern
+    speichereDaten();
+  }
+
+  function berechneGasKosten(verbrauchKWh, tarifName) {
+    let staffel = gasPreise[tarifName];
+    let kosten = 0;
+    let rest = verbrauchKWh;
+
+    for (let i = 0; i < staffel.length; i++) {
+      let limit = staffel[i].bis;
+      let preis = staffel[i].preis;
+      let grundgebuehr = staffel[i].grundgebuehr;
+
+      let verbrauchInStaffel = 0;
+
+      if (rest > 0) {
+        if (verbrauchKWh <= limit) {
+          verbrauchInStaffel = rest;
+        } else {
+          let vorherLimit = i === 0 ? 0 : staffel[i-1].bis;
+          verbrauchInStaffel = Math.min(rest, limit - vorherLimit);
+        }
+
+        kosten += verbrauchInStaffel * preis;
+        rest -= verbrauchInStaffel;
+
+        if (i === staffel.length - 1) {
+          kosten += grundgebuehr; // Grundgebühr nur einmal addieren
         }
       }
-      return 0;
+    }
+    return kosten;
+  }
+
+  function speichereDaten() {
+    localStorage.setItem("gesamtStromKosten", gesamtStromKosten);
+    localStorage.setItem("gesamtGasKosten", gesamtGasKosten);
+    localStorage.setItem("gezahltAbschlaege", gezahlteAbschlaege);
+  }
+
+  function ladeGespeicherteDaten() {
+    monatlicherAbschlag = parseFloat(localStorage.getItem("monatlicherAbschlag")) || 0;
+    document.getElementById("monatlicherAbschlagInput").value = monatlicherAbschlag;
+
+    let stromTarif = localStorage.getItem("stromTarif");
+    if (stromTarif) document.getElementById("stromTarif").value = stromTarif;
+
+    let gasTarif = localStorage.getItem("gasTarif");
+    if (gasTarif) document.getElementById("gasTarif").value = gasTarif;
+
+    gesamtStromKosten = parseFloat(localStorage.getItem("gesamtStromKosten")) || 0;
+    gesamtGasKosten = parseFloat(localStorage.getItem("gesamtGasKosten")) || 0;
+    gezahlteAbschlaege = parseFloat(localStorage.getItem("gezahltAbschlaege")) || 0;
+
+    document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
+    document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
+    document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
+    document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
+
+    let gesamtBilanz = gezahlteAbschlaege - (gesamtStromKosten + gesamtGasKosten);
+    let guthabenEl = document.getElementById("guthaben");
+    let guthabenKurzEl = document.getElementById("guthabenKurz");
+    guthabenEl.textContent = gesamtBilanz.toFixed(2) + " €";
+    guthabenKurzEl.textContent = gesamtBilanz.toFixed(2) + " €";
+
+    if (gesamtBilanz >= 0) {
+      guthabenEl.classList.add("positive");
+      guthabenEl.classList.remove("negative");
+      guthabenKurzEl.classList.add("positive");
+      guthabenKurzEl.classList.remove("negative");
+    } else {
+      guthabenEl.classList.add("negative");
+      guthabenEl.classList.remove("positive");
+      guthabenKurzEl.classList.add("negative");
+      guthabenKurzEl.classList.remove("positive");
     }
 
-    function updateAbschlag() {
-      monatlicherAbschlag = parseFloat(document.getElementById("monatlicherAbschlagInput").value) || 0;
-      localStorage.setItem("monatlicherAbschlag", monatlicherAbschlag);
-    }
+    // Jahr anzeigen
+    document.getElementById("currentYear").textContent = aktuellesJahr;
+    document.getElementById("currentYearSummary").textContent = aktuellesJahr;
+  }
 
-    function updateTarife() {
-      const stromTarif = document.getElementById("stromTarif").value;
-      const gasTarif = document.getElementById("gasTarif").value;
-      localStorage.setItem("stromTarif", stromTarif);
-      localStorage.setItem("gasTarif", gasTarif);
-    }
+  function rechnerLeeren() {
+    localStorage.clear();
+    location.reload();
+  }
 
-    function ladeGespeicherteDaten() {
-      document.getElementById("currentYear").innerText = aktuellesJahr;
-      document.getElementById("currentYearSummary").innerText = aktuellesJahr;
-
-      const gespeicherterAbschlag = localStorage.getItem("monatlicherAbschlag");
-      if (gespeicherterAbschlag !== null) {
-        monatlicherAbschlag = parseFloat(gespeicherterAbschlag);
-        document.getElementById("monatlicherAbschlagInput").value = monatlicherAbschlag;
-      }
-
-      const gespeicherterStrom = localStorage.getItem("stromVormonat");
-      if (gespeicherterStrom !== null) {
-        document.getElementById("stromVormonat").value = gespeicherterStrom;
-      }
-
-      const gespeicherterGas = localStorage.getItem("gasVormonat");
-      if (gespeicherterGas !== null) {
-        document.getElementById("gasVormonat").value = gespeicherterGas;
-      }
-
-      gesamtStromKosten = parseFloat(localStorage.getItem("gesamtStromKosten")) || 0;
-      gesamtGasKosten = parseFloat(localStorage.getItem("gesamtGasKosten")) || 0;
-      gezahlteAbschlaege = parseFloat(localStorage.getItem("gezahlteAbschlaege")) || 0;
-
-      document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
-      document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
-      document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
-      document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
-
-      const gespeichertesGuthaben = localStorage.getItem("gesamtBilanz");
-      if (gespeichertesGuthaben !== null) {
-        const wert = parseFloat(gespeichertesGuthaben).toFixed(2) + " €";
-        const klasse = parseFloat(gespeichertesGuthaben) >= 0 ? "positive" : "negative";
-        document.getElementById("guthaben").textContent = wert;
-        document.getElementById("guthabenKurz").textContent = wert;
-        document.getElementById("guthaben").className = klasse;
-        document.getElementById("guthabenKurz").className = klasse;
-      }
-
-      const gespeicherteErgebnisse = JSON.parse(localStorage.getItem("ergebnisse") || "[]");
-      document.getElementById("monatsErgebnisse").innerHTML = gespeicherteErgebnisse.map(entry => entry.html).join('');
-    }
-
-    function berechnen() {
-      const stromTarif = document.getElementById("stromTarif").value;
-      const gasTarif = document.getElementById("gasTarif").value;
-      const stromAlt = parseFloat(document.getElementById("stromVormonat").value) || 0;
-      const stromAktuell = parseFloat(document.getElementById("stromAktuell").value) || 0;
-      const gasAlt = parseFloat(document.getElementById("gasVormonat").value) || 0;
-      const gasAktuell = parseFloat(document.getElementById("gasAktuell").value) || 0;
-
-      const stromVerbrauch = stromAktuell - stromAlt;
-      const stromKosten = (stromVerbrauch * stromPreise[stromTarif].preisProKWh) + stromPreise[stromTarif].grundgebuehr;
-      const gasVerbrauch = (gasAktuell - gasAlt) * 10; // m³ to kWh (grober Umrechnungsfaktor)
-      const gasKosten = berechneGasKosten(gasVerbrauch, gasTarif);
-
-      gesamtStromKosten += stromKosten;
-      gesamtGasKosten += gasKosten;
-      gezahlteAbschlaege += monatlicherAbschlag;
-
-      const gesamtkosten = gesamtStromKosten + gesamtGasKosten;
-      const bilanz = gezahlteAbschlaege - gesamtkosten;
-
-      localStorage.setItem("stromVormonat", stromAktuell);
-      localStorage.setItem("gasVormonat", gasAktuell);
-
-      document.getElementById("stromVormonat").value = stromAktuell;
-      document.getElementById("gasVormonat").value = gasAktuell;
-
-      localStorage.setItem("gesamtStromKosten", gesamtStromKosten);
-      localStorage.setItem("gesamtGasKosten", gesamtGasKosten);
-      localStorage.setItem("gezahlteAbschlaege", gezahlteAbschlaege);
-      localStorage.setItem("gesamtBilanz", bilanz);
-
-      document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
-      document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
-      document.getElementById("gesamtSumme").textContent = gesamtkosten.toFixed(2) + " €";
-      document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
-
-      const klasse = bilanz >= 0 ? "positive" : "negative";
-      const bilanzText = bilanz.toFixed(2) + " €";
-      document.getElementById("guthaben").textContent = bilanzText;
-      document.getElementById("guthabenKurz").textContent = bilanzText;
-      document.getElementById("guthaben").className = klasse;
-      document.getElementById("guthabenKurz").className = klasse;
-
-      const monatName = new Date().toLocaleString('de-DE', { month: 'long' });
-      const eintrag = {
-        monat: monatName,
-        html: `<p><strong>${monatName}</strong>: Strom: ${stromKosten.toFixed(2)} €, Gas: ${gasKosten.toFixed(2)} €</p>`
-      };
-      let gespeicherte = JSON.parse(localStorage.getItem("ergebnisse") || "[]");
-      gespeicherte.push(eintrag);
-      localStorage.setItem("ergebnisse", JSON.stringify(gespeicherte));
-      document.getElementById("monatsErgebnisse").innerHTML += eintrag.html;
-    }
-
-    function rechnerLeeren() {
-      localStorage.clear();
-      location.reload();
-    }
-
-    function ladeICSDatei() {
-      const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//DeinTool//Zählerstand-Erinnerung//DE\nBEGIN:VEVENT\nUID:${Date.now()}@zaehlerstand.local\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}\nSUMMARY:Zählerstände ablesen\nDESCRIPTION:Bitte Strom- und Gaszählerstände ablesen und eintragen.\nDTSTART;TZID=Europe/Berlin:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}\nDTEND;TZID=Europe/Berlin:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-1\nEND:VEVENT\nEND:VCALENDAR`;
-      const blob = new Blob([icsContent], { type: 'text/calendar' });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "zaehlerstand_erinnerung.ics";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
+  // Kalender-ICS-Funktion (Dummy/Platzhalter)
+  function ladeICSDatei() {
+    alert("ICS-Datei wird geladen...");
+  }
+</script>
 </body>
 </html>
+
 
