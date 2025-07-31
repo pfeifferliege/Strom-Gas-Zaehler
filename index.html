@@ -239,6 +239,10 @@
       localStorage.setItem("stromVormonat", stromAktuell);
       localStorage.setItem("gasVormonat", gasAktuell);
 
+      // NEU: Formularfelder aktualisieren
+      document.getElementById("stromVormonat").value = stromAktuell;
+      document.getElementById("gasVormonat").value = gasAktuell;
+
       const monat = new Date().toLocaleString('de-DE', { month: 'long' });
       const html = `
         <div>
@@ -285,4 +289,5 @@
   </script>
 </body>
 </html>
+
 
