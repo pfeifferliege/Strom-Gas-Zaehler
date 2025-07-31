@@ -1,224 +1,123 @@
-<!DOCTYPE html>  <html lang="de"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Strom- & Gasrechner</title>  <style>
-  
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Strom- & Gasrechner</title>
+  <style>
     body {
-  
       font-family: Arial, sans-serif;
-  
       max-width: 700px;
-  
       margin: auto;
-  
       padding: 20px;
-  
       background-color: #f4f4f4;
     }
-      
-      .container {
-  
+    .container {
       background: white;
-  
       padding: 15px;
-  
       border-radius: 8px;
-  
       box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-  
-  }
-    
-  
+    }
     h2, h3 { text-align: center; }
-  
     label { font-weight: bold; display: block; margin-top: 10px; }
-  
     input, select {
-  
       width: 80%;
-  
       padding: 10px;
-  
       margin-top: 5px;
-  
       border: 1px solid #ccc;
-  
       border-radius: 5px;
-  
       font-size: 16px;
-  
     }
-  
     .result {
-  
       font-weight: bold;
-  
       margin-top: 10px;
-  
     }
-  
     .positive { color: green; }
-  
     .negative { color: red; }
-  
     button {
-  
       width: 100%;
-  
       padding: 12px;
-  
       margin-top: 15px;
-  
       font-size: 16px;
-  
       background: #007BFF;
-  
       color: white;
-  
       border: none;
-  
       border-radius: 5px;
-  
       cursor: pointer;
-  
     }
-  
     button:hover { background: #0056b3; }
-  
     hr { margin: 20px 0; border: 1px solid #ddd; }
-  
     .summary-box {
-  
       border: 2px solid black;
-  
       padding: 15px;
-  
       font-weight: bold;
-  
       background-color: #fffbe6;
-  
       border-radius: 5px;
-  
       margin-bottom: 20px;
-  
     }
-  
     .double-line {
-  
       border-top: 3px double black;
-  
       margin: 20px 0;
-  
     }
-  
-  </style></head><body onload="ladeGespeicherteDaten(); updateTarife();">  
-    <button onclick="ladeICSDatei()">Ableseerinnerung für Kalender</button>
-    <hr>
+  </style>
+</head>
+<body onload="ladeGespeicherteDaten(); updateTarife();">
+  <button onclick="ladeICSDatei()">Ableseerinnerung für Kalender</button>
+  <hr>
 
-<h3>💼 Aktuelle Bilanz</h3>
+  <h3>💼 Aktuelle Bilanz</h3>
+  <p class="result">Guthaben/Nachzahlung: <span id="guthabenKurz" class="positive">0,00 €</span></p>
+  <hr>
 
-<p class="result">Guthaben/Nachzahlung: <span id="guthabenKurz" class="positive">0,00 €</span></p>
-<hr>
+  <label>🔌 Stromtarif auswählen:</label>
+  <select id="stromTarif" onchange="updateTarife()">
+    <option value="Klima Classic">Klima Classic</option>
+    <option value="Klima Service flex">Klima Service flex</option>
+    <option value="Klima Nacht flex (8+0)">Klima Nacht flex (8+0)</option>
+    <option value="Klima Nacht flex (8+2)">Klima Nacht flex (8+2)</option>
+    <option value="Klima Nacht flex (8+4)">Klima Nacht flex (8+4)</option>
+    <option value="Klima regio-A-flex">Klima regio-A-flex</option>
+    <option value="Klima regio-M-flex">Klima regio-M-flex</option>
+  </select>
 
+  <label>🔥 Gastarif auswählen:</label>
+  <select id="gasTarif" onchange="updateTarife()">
+    <option value="Classic Gas (allgem. Erdgaspreise)">Classic Gas (allgem. Erdgaspreise)</option>
+    <option value="Sonderangebot Service Gas flex">Sonderangebot Service Gas flex</option>
+  </select>
 
-<label>🔌 Stromtarif auswählen:</label>
+  <label>💶 Monatlicher Abschlag (€)</label>
+  <input type="number" id="monatlicherAbschlagInput" value="" onchange="updateAbschlag()" />
 
-<select id="stromTarif" onchange="updateTarife()">
+  <h3>🔌 Strom</h3>
+  <label>Vormonatszählerstand (kWh)</label>
+  <input type="number" id="stromVormonat" />
+  <label>Aktueller Zählerstand (kWh)</label>
+  <input type="number" id="stromAktuell" />
 
-  <option value="Klima Classic">Klima Classic</option>
+  <h3>🔥 Gas</h3>
+  <label>Vormonatszählerstand (m³)</label>
+  <input type="number" id="gasVormonat" />
+  <label>Aktueller Zählerstand (m³)</label>
+  <input type="number" id="gasAktuell" />
 
-  <option value="Klima Service flex">Klima Service flex</option>
+  <button onclick="berechnen()">Berechnen</button>
+  <hr />
 
-  <option value="Klima Nacht flex (8+0)">Klima Nacht flex (8+0)</option>
+  <h3>🗓 Monatliche Ergebnisse <span id="currentYear"></span></h3>
+  <div id="monatsErgebnisse"></div>
 
-  <option value="Klima Nacht flex (8+2)">Klima Nacht flex (8+2)</option>
+  <div class="double-line"></div>
+  <div class="summary-box">
+    <h3>🧾 Gesamtsumme <span id="currentYearSummary"></span></h3>
+    <p class="result">Stromkosten Gesamt: <span id="gesamtStrom">0,00 €</span></p>
+    <p class="result">Gaskosten Gesamt: <span id="gesamtGas">0,00 €</span></p>
+    <p class="result">Gesamtkosten: <span id="gesamtSumme">0,00 €</span></p>
+    <p class="result">Gezahlte Abschläge: <span id="gezahltAbschlag" style="color: blue;">0,00 €</span></p>
+    <p class="result">Guthaben/Nachzahlung: <span id="guthaben" class="positive">0,00 €</span></p>
+  </div>
 
-  <option value="Klima Nacht flex (8+4)">Klima Nacht flex (8+4)</option>
-
-  <option value="Klima regio-A-flex">Klima regio-A-flex</option>
-
-  <option value="Klima regio-M-flex">Klima regio-M-flex</option>
-
-</select>
-
-
-
-<label>🔥 Gastarif auswählen:</label>
-
-<select id="gasTarif" onchange="updateTarife()">
-
-  <option value="Classic Gas (allgem. Erdgaspreise)">Classic Gas (allgem. Erdgaspreise)</option>
-
-  <option value="Sonderangebot Service Gas flex">Sonderangebot Service Gas flex</option>
-
-</select>
-
-
-
-<label>💶 Monatlicher Abschlag (€)</label>
-
-<input type="number" id="monatlicherAbschlagInput" value="" onchange="updateAbschlag()" />
-
-
-
-<h3>🔌 Strom</h3>
-
-<label>Vormonatszählerstand (kWh)</label>
-
-<input type="number" id="stromVormonat" />
-
-<label>Aktueller Zählerstand (kWh)</label>
-
-<input type="number" id="stromAktuell" />
-
-
-
-<h3>🔥 Gas</h3>
-
-<label>Vormonatszählerstand (m³)</label>
-
-<input type="number" id="gasVormonat" />
-
-<label>Aktueller Zählerstand (m³)</label>
-
-<input type="number" id="gasAktuell" />
-
-
-
-<button onclick="berechnen()">Berechnen</button>
-
-<hr />
-
-
-
-<h3>📅 Monatliche Ergebnisse <span id="currentYear"></span></h3>
-
-<div id="monatsErgebnisse"></div>
-
-
-
-<div class="double-line"></div>
-
-
-
-<div class="summary-box">
-
-  <h3>🧾 Gesamtsumme <span id="currentYearSummary"></span></h3>
-
-  <p class="result">Stromkosten Gesamt: <span id="gesamtStrom">0,00 €</span></p>
-
-  <p class="result">Gaskosten Gesamt: <span id="gesamtGas">0,00 €</span></p>
-
-  <p class="result">Gesamtkosten: <span id="gesamtSumme">0,00 €</span></p>
-
-  <p class="result">Gezahlte Abschläge: <span id="gezahltAbschlag" style="color: blue;">0,00 €</span></p>
-
-  <p class="result">Guthaben/Nachzahlung: <span id="guthaben" class="positive">0,00 €</span></p>
-
-</div>
-
-
-
-<button onclick="rechnerLeeren()">Rechner leeren</button>
-
-  </div><script>
+  <button onclick="rechnerLeeren()">Rechner leeren</button><script>
   
   let monatlicherAbschlag = 0;
   
