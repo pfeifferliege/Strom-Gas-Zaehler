@@ -174,6 +174,9 @@
     }
 
     function ladeGespeicherteDaten() {
+      monatlicherAbschlag = parseFloat(localStorage.getItem("monatlicherAbschlag")) || 0;
+      document.getElementById("monatlicherAbschlagInput").value = monatlicherAbschlag;
+
       document.getElementById("stromVormonat").value = localStorage.getItem("stromVormonat") || "";
       document.getElementById("gasVormonat").value = localStorage.getItem("gasVormonat") || "";
       document.getElementById("currentYear").innerText = aktuellesJahr;
@@ -190,14 +193,78 @@
 
       const gespeichertesGuthaben = localStorage.getItem("gesamtBilanz");
       if (gespeichertesGuthaben !== null) {
-        document.getElementById("guthaben").textContent = parseFloat(gespeichertesGuthaben).toFixed(2) + " €";
-        document.getElementById("guthabenKurz").textContent = parseFloat(gespeichertesGuthaben).toFixed(2) + " €";
-        document.getElementById("guthaben").className = parseFloat(gespeichertesGuthaben) >= 0 ? "positive" : "negative";
-        document.getElementById("guthabenKurz").className = parseFloat(gespeichertesGuthaben) >= 0 ? "positive" : "negative";
+        const guthaben = parseFloat(gespeichertesGuthaben);
+        document.getElementById("guthaben").textContent = guthaben.toFixed(2) + " €";
+        document.getElementById("guthabenKurz").textContent = guthaben.toFixed(2) + " €";
+        const klasse = guthaben >= 0 ? "positive" : "negative";
+        document.getElementById("guthaben").className = klasse;
+        document.getElementById("guthabenKurz").className = klasse;
       }
 
       const gespeicherteErgebnisse = JSON.parse(localStorage.getItem("ergebnisse") || "[]");
       document.getElementById("monatsErgebnisse").innerHTML = gespeicherteErgebnisse.map(entry => entry.html).join('');
+    }
+
+    function berechnen() {
+      const stromVormonat = parseFloat(document.getElementById("stromVormonat").value) || 0;
+      const stromAktuell = parseFloat(document.getElementById("stromAktuell").value) || 0;
+      const gasVormonat = parseFloat(document.getElementById("gasVormonat").value) || 0;
+      const gasAktuell = parseFloat(document.getElementById("gasAktuell").value) || 0;
+
+      const stromTarif = document.getElementById("stromTarif").value;
+      const gasTarif = document.getElementById("gasTarif").value;
+
+      const stromVerbrauch = stromAktuell - stromVormonat;
+      const gasVerbrauchM3 = gasAktuell - gasVormonat;
+      const gasVerbrauchKWh = gasVerbrauchM3 * 10;
+
+      const stromPreis = stromPreise[stromTarif];
+      const stromKosten = (stromVerbrauch * stromPreis.preisProKWh) + stromPreis.grundgebuehr;
+
+      const gasKosten = berechneGasKosten(gasVerbrauchKWh, gasTarif);
+
+      const gesamtkostenMonat = stromKosten + gasKosten;
+      gezahlteAbschlaege += monatlicherAbschlag;
+
+      gesamtStromKosten += stromKosten;
+      gesamtGasKosten += gasKosten;
+
+      localStorage.setItem("gesamtStromKosten", gesamtStromKosten);
+      localStorage.setItem("gesamtGasKosten", gesamtGasKosten);
+      localStorage.setItem("gezahlteAbschlaege", gezahlteAbschlaege);
+
+      const guthaben = gezahlteAbschlaege - (gesamtStromKosten + gesamtGasKosten);
+      localStorage.setItem("gesamtBilanz", guthaben);
+
+      localStorage.setItem("stromVormonat", stromAktuell);
+      localStorage.setItem("gasVormonat", gasAktuell);
+
+      const monat = new Date().toLocaleString('de-DE', { month: 'long' });
+      const html = `
+        <div>
+          <strong>${monat}</strong><br>
+          Strom: ${stromVerbrauch} kWh → ${stromKosten.toFixed(2)} €<br>
+          Gas: ${gasVerbrauchM3} m³ / ${gasVerbrauchKWh} kWh → ${gasKosten.toFixed(2)} €<br>
+          Abschlag: ${monatlicherAbschlag.toFixed(2)} €<br>
+          Bilanz: ${(monatlicherAbschlag - gesamtkostenMonat).toFixed(2)} €
+        </div><hr>
+      `;
+
+      const ergebnisse = JSON.parse(localStorage.getItem("ergebnisse") || "[]");
+      ergebnisse.push({ html });
+      localStorage.setItem("ergebnisse", JSON.stringify(ergebnisse));
+      document.getElementById("monatsErgebnisse").innerHTML = ergebnisse.map(e => e.html).join('');
+
+      document.getElementById("gesamtStrom").textContent = gesamtStromKosten.toFixed(2) + " €";
+      document.getElementById("gesamtGas").textContent = gesamtGasKosten.toFixed(2) + " €";
+      document.getElementById("gesamtSumme").textContent = (gesamtStromKosten + gesamtGasKosten).toFixed(2) + " €";
+      document.getElementById("gezahltAbschlag").textContent = gezahlteAbschlaege.toFixed(2) + " €";
+      document.getElementById("guthaben").textContent = guthaben.toFixed(2) + " €";
+      document.getElementById("guthabenKurz").textContent = guthaben.toFixed(2) + " €";
+
+      const klasse = guthaben >= 0 ? "positive" : "negative";
+      document.getElementById("guthaben").className = klasse;
+      document.getElementById("guthabenKurz").className = klasse;
     }
 
     function rechnerLeeren() {
@@ -218,3 +285,4 @@
   </script>
 </body>
 </html>
+
