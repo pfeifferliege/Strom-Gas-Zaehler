@@ -149,6 +149,10 @@
                     
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
                         <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary mb-2 sm:mb-0"><i class="fas fa-chart-pie mr-3"></i>Jahresübersicht</h2>
+                        
+                        <button type="button" onclick="render()" class="w-full sm:w-auto bg-green-500 text-white font-bold py-1 px-3 rounded-xl hover:bg-green-600 text-sm transition-transform transform hover:scale-[1.02] shadow-md">
+                            <i class="fas fa-sync-alt mr-1"></i> Daten Aktualisieren
+                        </button>
                     </div>
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 border-b pb-4 border-slate-100">
                         <span id="current-year-display" class="text-slate-500 text-xl font-semibold mb-2 sm:mb-0"></span>
@@ -574,7 +578,8 @@ function saveCurrentSummaryAsYear() {
         gasCosts: totalGasCosts
     };
     
-    saveAndRerender();
+    saveStateToLocalStorage();
+    populateComparisonDropdown();
     alert(`Jahresbilanz für ${currentYear} gespeichert!`);
 }
 
@@ -737,33 +742,20 @@ function addEntry() {
     // Sortiere die Einträge sofort chronologisch (A-Z auf ID), damit prefillNextEntry den korrekten letzten Eintrag findet
     appState.entries.sort((a, b) => a.id.localeCompare(b.id));
     
-    // 1. Hole den Standard-Abschlag aus den gespeicherten Settings (vor der temporären Änderung)
-    const savedSettingsString = localStorage.getItem('energyAppSettings');
-    let storedMonthlyPayment = DEFAULT_SETTINGS.monthlyPayment;
+    // FÜGE HIER EINEN ZWEITEN AUFRUF VON saveSettings() HINZU, 
+    // um den monatlichen Abschlag WIEDER auf den Standardwert zurückzusetzen, 
+    // falls er für diesen Eintrag temporär erhöht wurde.
 
-    if (savedSettingsString) {
-        const parsedSettings = JSON.parse(savedSettingsString);
-        // Hier muss der *ursprüngliche* reguläre Abschlag geholt werden, der nicht der gerade eingegebene (korrigierte) Wert ist.
-        // Da saveSettings() und loadStateFromLocalStorage() nur den Wert aus dem Input-Feld verwenden, müssen wir hier einen kleinen Umweg gehen, 
-        // um den Wert auf den ursprünglichen Standard-Abschlag zurückzusetzen, der in den Settings persistiert ist, falls er temporär erhöht wurde.
-        // Da die Abschlagszahlung jetzt *im Eintrag* gespeichert ist, können wir den globalen Wert einfach auf den zuletzt gespeicherten Standardwert zurücksetzen.
-        
-        // Da der Code keine separate Speicherung für den "Standard"-Abschlag hat, nutzen wir den Wert, 
-        // der kurz vor dem Speichern in appState.settings.monthlyPayment stand, um ihn in den Eintrag zu übernehmen.
-        // Um das Eingabefeld zurückzusetzen, setzen wir es auf den Wert aus dem localStorage, wenn es existiert.
-        
-        // NEU: Nur das Eingabefeld für den Endstand zurücksetzen, damit prefillNextEntry die Felder korrekt belegt.
-        document.getElementById('strom-end').value = '';
-        document.getElementById('gas-end').value = '';
-        
-        // Setze den globalen Abschlag in den Einstellungen NICHT zurück, damit der Nutzer ihn manuell anpassen kann.
-        // Der wichtige Teil ist, dass der korrigierte Wert im Eintrag gespeichert wurde.
+    // 1. Hole den regulären Abschlag, falls ein regulärer Wert in den Einstellungen gespeichert ist
+    const storedMonthlyPayment = localStorage.getItem('energyAppSettings') ? JSON.parse(localStorage.getItem('energyAppSettings')).monthlyPayment : DEFAULT_SETTINGS.monthlyPayment;
+    
+    // 2. Setze den globalen Wert in appState und UI zurück (oder auf den Standardwert)
+    appState.settings.monthlyPayment = storedMonthlyPayment;
+    document.getElementById('monthly-payment').value = storedMonthlyPayment;
+    
+    // 3. Speichere den korrigierten globalen State
+    saveStateToLocalStorage();
 
-    } else {
-        // Bei erstem Eintrag: Zurücksetzen auf Default
-        appState.settings.monthlyPayment = DEFAULT_SETTINGS.monthlyPayment;
-        document.getElementById('monthly-payment').value = DEFAULT_SETTINGS.monthlyPayment;
-    }
 
     saveAndRerender();
 }
@@ -778,13 +770,17 @@ function deleteEntry(entryId) {
 }
 
 function saveSettings() {
-    // Speichert den Wert, wie er gerade im Feld steht.
+    // Speichert den Wert, wie er gerade im Feld steht. Wenn der Nutzer ihn für einen Eintrag erhöht, 
+    // wird dieser Wert in appState.settings gespeichert und beim nächsten addEntry() als "monthlyPayment" in den Eintrag übernommen.
     appState.settings.monthlyPayment = parseFloat(document.getElementById('monthly-payment').value) || 0;
     appState.settings.stromTariff = document.getElementById('strom-tariff-select').value;
     appState.settings.gasTariff = document.getElementById('gas-tariff-select').value;
     appState.settings.gasFaktor = parseFloat(document.getElementById('gas-faktor').value) || 0;
     
-    saveAndRerender(); // Verwendet saveAndRerender für die konsistente Aktualisierung der UI
+    saveStateToLocalStorage();
+    toggleInputFields();
+    // Sofortiges Rendern, damit die UI die neuen Tarif-Einstellungen übernimmt (inkl. Neuberechnung)
+    render(); 
 }
 
 function clearAllData() {
