@@ -57,6 +57,46 @@
             <div class="lg:col-span-1 space-y-8">
                 
                 <div class="bg-white p-7 rounded-3xl shadow-xl border border-slate-200">
+                    <button type="button" onclick="toggleSettings()" class="w-full flex justify-between items-center text-left">
+                        <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary"><i class="fas fa-cog mr-3"></i>Einstellungen</h2>
+                        <i id="settings-chevron" class="fas fa-chevron-down text-slate-500 transition-transform duration-300"></i>
+                    </button>
+                    <div id="settings-content" class="mt-5 pt-5 border-t border-slate-200 hidden">
+                        <form id="settings-form" class="space-y-4 text-sm">
+                           <div>
+                                <label for="monthly-payment" class="block font-medium text-slate-700">Monatlicher Abschlag (€)</label>
+                                <input type="number" step="any" id="monthly-payment" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 focus:ring-1 seasonal-focus-ring">
+                           </div>
+                           <div>
+                                <label for="strom-tariff-select" class="block font-medium text-slate-700">Ihr Stromtarif</label>
+                                <select id="strom-tariff-select" onchange="saveSettings()" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 appearance-none focus:ring-1 seasonal-focus-ring"></select>
+                           </div>
+                           <div>
+                                <label for="gas-tariff-select" class="block font-medium text-slate-700">Ihr Gastarif</label>
+                                <select id="gas-tariff-select" onchange="saveSettings()" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 appearance-none focus:ring-1 seasonal-focus-ring"></select>
+                           </div>
+                           <div id="gas-faktor-block" class="hidden">
+                                <label for="gas-faktor" class="block font-medium text-slate-700">Umrechnungsfaktor Gas (m³ → kWh)</label>
+                                <input type="number" step="any" id="gas-faktor" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 focus:ring-1 seasonal-focus-ring">
+                           </div>
+
+                           <button type="button" onclick="saveSettings()" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition shadow-md">
+                                <i class="fas fa-cogs mr-2"></i> Einstellungen Speichern
+                           </button>
+                           
+                           <div class="pt-4 border-t border-slate-200">
+                               <button type="button" onclick="clearAllData()" class="w-full bg-red-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition text-sm shadow-md">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> Monatsdaten Löschen
+                               </button>
+                               <button type="button" onclick="clearYearlyData()" class="w-full mt-2 bg-red-400 text-white font-bold py-2 px-4 rounded-xl hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-300 transition text-sm shadow-md">
+                                    <i class="fas fa-archive mr-1"></i> Gespeicherte Jahresbilanzen Löschen
+                               </button>
+                           </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="bg-white p-7 rounded-3xl shadow-xl border border-slate-200">
                     <h2 class="text-2xl font-bold mb-5 flex items-center seasonal-icon-primary"><i class="fas fa-plus-circle mr-3"></i>Neuer Eintrag</h2>
                     <div id="error-message" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm font-medium border border-red-300"></div>
                     <form id="entry-form" class="space-y-5">
@@ -100,46 +140,6 @@
                             <i class="fas fa-save mr-2"></i> Eintrag Speichern
                         </button>
                     </form>
-                </div>
-
-                <div class="bg-white p-7 rounded-3xl shadow-xl border border-slate-200">
-                    <button type="button" onclick="toggleSettings()" class="w-full flex justify-between items-center text-left">
-                        <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary"><i class="fas fa-cog mr-3"></i>Einstellungen</h2>
-                        <i id="settings-chevron" class="fas fa-chevron-down text-slate-500 transition-transform duration-300"></i>
-                    </button>
-                    <div id="settings-content" class="mt-5 pt-5 border-t border-slate-200 hidden">
-                        <form id="settings-form" class="space-y-4 text-sm">
-                           <div>
-                                <label for="monthly-payment" class="block font-medium text-slate-700">Monatlicher Abschlag (€)</label>
-                                <input type="number" step="any" id="monthly-payment" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 focus:ring-1 seasonal-focus-ring">
-                           </div>
-                           <div>
-                                <label for="strom-tariff-select" class="block font-medium text-slate-700">Ihr Stromtarif</label>
-                                <select id="strom-tariff-select" onchange="saveSettings()" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 appearance-none focus:ring-1 seasonal-focus-ring"></select>
-                           </div>
-                           <div>
-                                <label for="gas-tariff-select" class="block font-medium text-slate-700">Ihr Gastarif</label>
-                                <select id="gas-tariff-select" onchange="saveSettings()" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 appearance-none focus:ring-1 seasonal-focus-ring"></select>
-                           </div>
-                           <div id="gas-faktor-block" class="hidden">
-                                <label for="gas-faktor" class="block font-medium text-slate-700">Umrechnungsfaktor Gas (m³ → kWh)</label>
-                                <input type="number" step="any" id="gas-faktor" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 focus:ring-1 seasonal-focus-ring">
-                           </div>
-
-                           <button type="button" onclick="saveSettings()" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition shadow-md">
-                                <i class="fas fa-cogs mr-2"></i> Einstellungen Speichern
-                           </button>
-                           
-                           <div class="pt-4 border-t border-slate-200">
-                               <button type="button" onclick="clearAllData()" class="w-full bg-red-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition text-sm shadow-md">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i> Monatsdaten Löschen
-                               </button>
-                               <button type="button" onclick="clearYearlyData()" class="w-full mt-2 bg-red-400 text-white font-bold py-2 px-4 rounded-xl hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-300 transition text-sm shadow-md">
-                                    <i class="fas fa-archive mr-1"></i> Gespeicherte Jahresbilanzen Löschen
-                               </button>
-                           </div>
-                        </form>
-                    </div>
                 </div>
             </div>
 
@@ -250,10 +250,10 @@ const DEFAULT_SETTINGS = {
 let appState = {
     settings: { ...DEFAULT_SETTINGS },
     entries: [],
-    yearlySummaries: {} // Neu: Speichert abgeschlossene Jahresbilanzen { 'YYYY': { totalCosts: X, paid: Y, ... } }
+    yearlySummaries: {}
 };
 
-// --- SEASONAL DESIGN LOGIC (Unverändert) ---
+// --- SEASONAL DESIGN LOGIC ---
 function getSeasonColors() {
     const month = new Date().getMonth() + 1;
     if (month >= 3 && month <= 5) { return { primary: '#10b981', icon: '#059669', ring: '#34d399' }; }
@@ -279,7 +279,7 @@ function initApp() {
     applySettingsToUI();
     toggleInputFields(); 
     render();
-    populateComparisonDropdown(); // Neu: Dropdown nach dem Laden füllen
+    populateComparisonDropdown();
     
     // Setzt das Eingabefeld auf den aktuellen Monat
     const now = new Date();
@@ -322,7 +322,7 @@ function populateTariffDropdowns() {
 function loadStateFromLocalStorage() {
     const savedSettings = localStorage.getItem('energyAppSettings');
     const savedEntries = localStorage.getItem('energyAppEntries');
-    const savedYearlySummaries = localStorage.getItem('energyAppYearlySummaries'); // Neu
+    const savedYearlySummaries = localStorage.getItem('energyAppYearlySummaries');
 
     if (savedSettings) {
         const loadedSettings = JSON.parse(savedSettings);
@@ -336,7 +336,7 @@ function loadStateFromLocalStorage() {
     if (savedEntries) {
         appState.entries = JSON.parse(savedEntries);
     }
-    if (savedYearlySummaries) { // Neu
+    if (savedYearlySummaries) {
         appState.yearlySummaries = JSON.parse(savedYearlySummaries);
     }
 }
@@ -344,7 +344,7 @@ function loadStateFromLocalStorage() {
 function saveStateToLocalStorage() {
     localStorage.setItem('energyAppSettings', JSON.stringify(appState.settings));
     localStorage.setItem('energyAppEntries', JSON.stringify(appState.entries));
-    localStorage.setItem('energyAppYearlySummaries', JSON.stringify(appState.yearlySummaries)); // Neu
+    localStorage.setItem('energyAppYearlySummaries', JSON.stringify(appState.yearlySummaries));
 }
 
 // --- DYNAMIC UI CONTROL ---
@@ -365,7 +365,7 @@ function render() {
     renderHistory();
     renderSummary();
     prefillNextEntry();
-    renderComparison(); // Vergleich neu rendern
+    renderComparison();
 }
 
 function renderHistory() {
@@ -437,14 +437,10 @@ function renderHistory() {
     });
 }
 
-/**
- * Berechnet und rendert die aktuelle Jahresübersicht
- */
 function renderSummary() {
     const currentYear = new Date().getFullYear();
     document.getElementById('current-year-display').textContent = `(${currentYear})`;
     
-    // Filtere Einträge für das aktuelle Jahr
     const currentYearEntries = appState.entries.filter(e => e.year === currentYear);
 
     const totalStromCosts = currentYearEntries.reduce((sum, entry) => sum + entry.strom.kosten, 0);
@@ -464,9 +460,6 @@ function renderSummary() {
     balanceEl.classList.toggle('text-red-600', balance < 0);
 }
 
-/**
- * Füllt das Dropdown für den Jahresvergleich.
- */
 function populateComparisonDropdown() {
     const select = document.getElementById('yearly-comparison-select');
     const currentYear = new Date().getFullYear().toString();
@@ -476,7 +469,6 @@ function populateComparisonDropdown() {
     
     let hasEntries = false;
     years.forEach(year => {
-        // Das aktuelle Jahr nicht zur Auswahl stellen, wenn es im Speicher ist
         if (year !== currentYear) {
             const option = document.createElement('option');
             option.value = year;
@@ -486,13 +478,9 @@ function populateComparisonDropdown() {
         }
     });
     
-    // Zeigt die Vergleichs-Sektion nur, wenn gespeicherte Daten existieren
     document.getElementById('comparison-section').classList.toggle('hidden', !hasEntries);
 }
 
-/**
- * Rendert die ausgewählte Jahresbilanz zum Vergleich.
- */
 function renderComparison() {
     const selectedYear = document.getElementById('yearly-comparison-select').value;
     const display = document.getElementById('comparison-display');
@@ -505,10 +493,6 @@ function renderComparison() {
     const summary = appState.yearlySummaries[selectedYear];
     const balanceColor = summary.balance >= 0 ? 'text-green-600' : 'text-red-600';
     const balanceText = summary.balance >= 0 ? 'Guthaben' : 'Nachzahlung';
-
-    // Anzeige basierend auf den aktiven Tarifen des aktuellen Jahres
-    const isStromActive = appState.settings.stromTariff !== NO_TARIFF_SELECTED;
-    const isGasActive = appState.settings.gasTariff !== NO_TARIFF_SELECTED;
 
     display.innerHTML = `
         <p class="font-bold text-lg text-slate-800 mb-2">Vergleich: Bilanz ${selectedYear}</p>
@@ -530,9 +514,6 @@ function renderComparison() {
     `;
 }
 
-/**
- * Speichert die aktuelle Summary als abgeschlossene Jahresbilanz.
- */
 function saveCurrentSummaryAsYear() {
     const currentYear = new Date().getFullYear();
     const currentYearEntries = appState.entries.filter(e => e.year === currentYear);
@@ -548,7 +529,6 @@ function saveCurrentSummaryAsYear() {
         }
     }
     
-    // Daten aus der aktuellen Berechnung (renderSummary) kopieren
     const totalStromCosts = currentYearEntries.reduce((sum, entry) => sum + entry.strom.kosten, 0);
     const totalGasCosts = currentYearEntries.reduce((sum, entry) => sum + entry.gas.kosten, 0);
     const totalCosts = totalStromCosts + totalGasCosts;
@@ -565,13 +545,10 @@ function saveCurrentSummaryAsYear() {
     };
     
     saveStateToLocalStorage();
-    populateComparisonDropdown(); // Dropdown aktualisieren
+    populateComparisonDropdown();
     alert(`Jahresbilanz für ${currentYear} gespeichert!`);
 }
 
-/**
- * Holt den letzten Zählerstand und füllt die Vormonatsfelder des neuen Eintrags damit.
- */
 function prefillNextEntry() {
     const sortedEntries = [...appState.entries].sort((a, b) => b.id.localeCompare(a.id));
     
@@ -710,9 +687,6 @@ function saveSettings() {
     render(); 
 }
 
-/**
- * Setzt NUR die monatlichen Zählerstandsdaten zurück (für "Monatsdaten Löschen").
- */
 function clearAllData() {
     if (confirm("Sind Sie sicher, dass Sie alle monatlichen Zählerstandsdaten löschen möchten? Die gespeicherten Jahresbilanzen bleiben erhalten.")) {
         localStorage.removeItem('energyAppEntries');
@@ -722,9 +696,6 @@ function clearAllData() {
     }
 }
 
-/**
- * Löscht NUR die gespeicherten Jahresbilanzen.
- */
 function clearYearlyData() {
     if (confirm("Sind Sie sicher, dass Sie ALLE gespeicherten Jahresbilanzen löschen möchten?")) {
         localStorage.removeItem('energyAppYearlySummaries');
