@@ -146,13 +146,15 @@
             <div class="lg:col-span-2 space-y-8">
                 
                 <div class="bg-white p-7 rounded-3xl shadow-xl border border-slate-200">
-                    <div class="flex justify-between items-start mb-5">
-                        <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary"><i class="fas fa-chart-pie mr-3"></i>Jahresübersicht <span id="current-year-display" class="ml-2 text-slate-500 text-xl"></span></h2>
-                        <button type="button" onclick="saveCurrentSummaryAsYear()" class="bg-indigo-500 text-white font-bold py-1 px-3 rounded-xl hover:bg-indigo-600 text-sm transition-transform transform hover:scale-[1.02] shadow-md">
+                    
+                    <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary mb-3"><i class="fas fa-chart-pie mr-3"></i>Jahresübersicht</h2>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 border-b pb-4 border-slate-100">
+                        <span id="current-year-display" class="text-slate-500 text-xl font-semibold mb-2 sm:mb-0"></span>
+                        <button type="button" onclick="saveCurrentSummaryAsYear()" class="w-full sm:w-auto bg-indigo-500 text-white font-bold py-1 px-3 rounded-xl hover:bg-indigo-600 text-sm transition-transform transform hover:scale-[1.02] shadow-md">
                             <i class="fas fa-history mr-1"></i> Bilanz Speichern
                         </button>
                     </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                         <div class="bg-slate-50 p-4 rounded-xl border-t-4 seasonal-border-primary border-opacity-70">
                             <p class="text-sm text-slate-600 font-medium">Gesamtkosten</p>
@@ -439,7 +441,7 @@ function renderHistory() {
 
 function renderSummary() {
     const currentYear = new Date().getFullYear();
-    document.getElementById('current-year-display').textContent = `(${currentYear})`;
+    document.getElementById('current-year-display').textContent = `Aktuelles Jahr: ${currentYear}`;
     
     const currentYearEntries = appState.entries.filter(e => e.year === currentYear);
 
