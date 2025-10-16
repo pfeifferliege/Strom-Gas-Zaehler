@@ -46,7 +46,6 @@
 <body class="bg-gray-50 text-slate-800" onload="initApp()">
 
     <div class="container mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
-        
         <header class="text-center mb-10">
             <h1 class="text-5xl font-extrabold text-slate-900 drop-shadow-sm">Energie-Dashboard ⚡🏡</h1>
             <p class="text-slate-600 mt-2 text-lg">Behalten Sie den Überblick über Ihre Strom- & Gaskosten.</p>
@@ -55,7 +54,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             <div class="lg:col-span-1 space-y-8">
-                
                 <div class="bg-white p-7 rounded-3xl shadow-xl border border-slate-200">
                     <button type="button" onclick="toggleSettings()" class="w-full flex justify-between items-center text-left">
                         <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary"><i class="fas fa-cog mr-3"></i>Einstellungen</h2>
@@ -135,8 +133,7 @@
                         
                         <p id="no-tariff-active-hint" class="text-sm text-center text-red-500 font-medium hidden">⚠️ Bitte wählen Sie in den Einstellungen einen Tarif, um Zählerstände einzugeben.</p>
 
-
-                        <button type="button" onclick="addEntry()" class="w-full seasonal-bg-primary text-white font-extrabold py-3 px-4 rounded-xl seasonal-hover-bg-primary focus:outline-none focus:ring-4 seasonal-focus-ring focus:ring-opacity-50 transition-transform transform hover:scale-[1.02] shadow-lg mt-6">
+                        <button type="button" onclick="addEntry()" class="w-full seasonal-bg-primary text-white font-extrabold py-3 px-4 rounded-xl seasonal-hover-bg-primary focus:outline-none focus:ring-4 seasonal-focus-ring focus:ring-opacity50 transition-transform transform hover:scale-[1.02] shadow-lg mt-6">
                             <i class="fas fa-save mr-2"></i> Eintrag Speichern
                         </button>
                     </form>
@@ -144,17 +141,25 @@
             </div>
 
             <div class="lg:col-span-2 space-y-8">
-                
                 <div class="bg-white p-7 rounded-3xl shadow-xl border border-slate-200">
-                    
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
                         <h2 class="text-2xl font-bold flex items-center seasonal-icon-primary mb-2 sm:mb-0"><i class="fas fa-chart-pie mr-3"></i>Jahresübersicht</h2>
                     </div>
+                    
+                    <div id="end-of-year-hint" class="hidden bg-yellow-100 text-yellow-700 p-3 rounded-xl mb-4 text-sm font-medium border border-yellow-300">
+                        <i class="fas fa-exclamation-circle mr-2"></i> **Jahresabschluss!** Bitte klicken Sie auf **"Bilanz Speichern"**, um Ihre Jahresbilanz final zu speichern.
+                    </div>
+                    
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 border-b pb-4 border-slate-100">
                         <span id="current-year-display" class="text-slate-500 text-xl font-semibold mb-2 sm:mb-0"></span>
-                        <button type="button" onclick="saveCurrentSummaryAsYear()" class="w-full sm:w-auto bg-indigo-500 text-white font-bold py-1 px-3 rounded-xl hover:bg-indigo-600 text-sm transition-transform transform hover:scale-[1.02] shadow-md">
-                            <i class="fas fa-history mr-1"></i> Bilanz Speichern
-                        </button>
+                        <div class="flex space-x-2">
+                             <button type="button" id="toggle-comparison-btn" onclick="toggleComparison()" class="w-full sm:w-auto bg-indigo-400 text-white font-bold py-1 px-3 rounded-xl hover:bg-indigo-500 text-sm transition-transform transform hover:scale-[1.02] shadow-md">
+                                <i class="fas fa-balance-scale mr-1"></i> Vergleich anzeigen
+                            </button>
+                            <button type="button" onclick="saveCurrentSummaryAsYear()" class="w-full sm:w-auto bg-indigo-500 text-white font-bold py-1 px-3 rounded-xl hover:bg-indigo-600 text-sm transition-transform transform hover:scale-[1.02] shadow-md">
+                                <i class="fas fa-history mr-1"></i> Bilanz Speichern
+                            </button>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
@@ -185,7 +190,7 @@
 
                     <div id="comparison-section" class="mt-8 pt-5 border-t border-slate-200 hidden">
                         <label for="yearly-comparison-select" class="block font-medium text-slate-700 mb-2 flex items-center">
-                             <i class="fas fa-balance-scale mr-2 text-slate-500"></i>Jahresvergleich
+                             <i class="fas fa-balance-scale mr-2 text-slate-500"></i>Jahresvergleich auswählen
                         </label>
                         <select id="yearly-comparison-select" onchange="renderComparison()" class="mt-1 block w-full bg-slate-50 border border-slate-300 rounded-xl p-3 appearance-none focus:ring-1 seasonal-focus-ring"></select>
                         <div id="comparison-display" class="mt-4 p-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-sm">
@@ -198,7 +203,7 @@
                     <h2 class="text-2xl font-bold mb-5 flex items-center seasonal-icon-primary"><i class="fas fa-history mr-3"></i>Monats-Verlauf</h2>
                     <div id="history-container" class="space-y-4">
                         <p id="no-entries" class="text-slate-500 text-center py-8">Noch keine Einträge vorhanden. 🤓</p>
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -274,7 +279,6 @@ function applySeasonalDesign() {
     root.style.setProperty('--season-ring', colors.ring);
 }
 
-
 // --- INITIALIZATION ---
 function initApp() {
     applySeasonalDesign();
@@ -284,7 +288,6 @@ function initApp() {
     toggleInputFields(); 
     // Initiales Rendern des geladenen Zustands
     render(); 
-    populateComparisonDropdown();
     
     // Setzt das Eingabefeld auf den aktuellen Monat, falls noch kein Eintrag
     if (appState.entries.length === 0) {
@@ -346,7 +349,6 @@ function loadStateFromLocalStorage() {
     }
     if (savedEntries) {
         appState.entries = JSON.parse(savedEntries);
-        // HINWEIS: Alte Einträge, die noch kein 'monthlyPayment' Feld haben, werden im renderHistory() mit dem aktuellen Wert behandelt.
     }
     if (savedYearlySummaries) {
         appState.yearlySummaries = JSON.parse(savedYearlySummaries);
@@ -357,6 +359,78 @@ function saveStateToLocalStorage() {
     localStorage.setItem('energyAppSettings', JSON.stringify(appState.settings));
     localStorage.setItem('energyAppEntries', JSON.stringify(appState.entries));
     localStorage.setItem('energyAppYearlySummaries', JSON.stringify(appState.yearlySummaries));
+}
+
+// --- UTILITIES ---
+function formatCurrency(amount, withDecimal = false) {
+    return new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: withDecimal ? 2 : 0,
+        maximumFractionDigits: 2,
+    }).format(amount);
+}
+
+function getMonthName(monthIndex) {
+    const date = new Date(2000, monthIndex - 1, 1);
+    return date.toLocaleString('de-DE', { month: 'long' });
+}
+
+// --- CALCULATIONS ---
+
+function calculateGasCosts(verbrauchKWh) {
+    const tariffKey = appState.settings.gasTariff;
+    if (tariffKey === NO_TARIFF_SELECTED || !TARIFF_DATA.gas[tariffKey]) {
+        return { kosten: 0, preisProKWh: 0 };
+    }
+
+    const tariff = TARIFF_DATA.gas[tariffKey];
+    let totalCost = 0;
+    let grundpreisUsed = 0;
+
+    // Find the correct tier
+    for (const tier of tariff.tiers) {
+        if (verbrauchKWh <= tier.bis) {
+            totalCost = (verbrauchKWh * tier.arbeitspreis) + tier.grundpreis;
+            grundpreisUsed = tier.grundpreis;
+            return { kosten: totalCost, preisProKWh: tier.arbeitspreis, grundpreis: grundpreisUsed };
+        }
+    }
+    // Fallback (should be covered by Infinity tier)
+    return { kosten: 0, preisProKWh: 0, grundpreis: 0 };
+}
+
+function calculateStromCosts(verbrauchKWh) {
+    const tariffKey = appState.settings.stromTariff;
+    if (tariffKey === NO_TARIFF_SELECTED || !TARIFF_DATA.strom[tariffKey]) {
+        return { kosten: 0, preisProKWh: 0, grundpreis: 0 };
+    }
+    const tariff = TARIFF_DATA.strom[tariffKey];
+    const totalCost = (verbrauchKWh * tariff.arbeitspreis) + tariff.grundpreis;
+    return { kosten: totalCost, preisProKWh: tariff.arbeitspreis, grundpreis: tariff.grundpreis };
+}
+
+function recalculateEntry(entry) {
+    // Gas
+    const gasKWh = entry.gas.verbrauchM3 * appState.settings.gasFaktor;
+    const gasCalc = calculateGasCosts(gasKWh);
+    entry.gas.kosten = gasCalc.kosten;
+    entry.gas.verbrauchKWh = gasKWh;
+    
+    // Strom
+    const stromKWh = entry.strom.end - entry.strom.start;
+    const stromCalc = calculateStromCosts(stromKWh);
+    entry.strom.kosten = stromCalc.kosten;
+    entry.strom.verbrauch = stromKWh;
+
+    // Gesamtkosten
+    entry.totalCosts = entry.strom.kosten + entry.gas.kosten;
+}
+
+function recalculateAllEntries() {
+    // Wird beim Laden/Einstellen der App aufgerufen, um sicherzustellen, 
+    // dass alle Kosten mit den aktuellen Tarifen berechnet werden, falls Einstellungen geändert wurden
+    appState.entries.forEach(recalculateEntry);
 }
 
 // --- DYNAMIC UI CONTROL ---
@@ -372,42 +446,262 @@ function toggleInputFields() {
     document.getElementById('summary-gas-block').classList.toggle('hidden', !isGasActive);
 }
 
+function toggleSettings() {
+    const content = document.getElementById('settings-content');
+    const chevron = document.getElementById('settings-chevron');
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+        content.classList.remove('hidden');
+        chevron.classList.add('rotate-180');
+    } else {
+        content.classList.add('hidden');
+        chevron.classList.remove('rotate-180');
+    }
+}
+
+/**
+ * NEUE FUNKTION: Schaltet den Jahresvergleich-Abschnitt ein/aus
+ */
+function toggleComparison() {
+    const comparisonSection = document.getElementById('comparison-section');
+    const button = document.getElementById('toggle-comparison-btn');
+    const isHidden = comparisonSection.classList.contains('hidden');
+
+    if (isHidden) {
+        // Erst beim Anzeigen die Dropdown-Liste füllen und den Vergleich rendern
+        populateComparisonDropdown(); 
+        comparisonSection.classList.remove('hidden');
+        button.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Vergleich ausblenden';
+    } else {
+        comparisonSection.classList.add('hidden');
+        button.innerHTML = '<i class="fas fa-balance-scale mr-1"></i> Vergleich anzeigen';
+    }
+}
+
+// --- FORM & ACTION HANDLERS ---
+function saveSettings() {
+    // Werte aus der UI lesen
+    const monthlyPayment = parseFloat(document.getElementById('monthly-payment').value) || DEFAULT_SETTINGS.monthlyPayment;
+    const gasFaktor = parseFloat(document.getElementById('gas-faktor').value) || DEFAULT_SETTINGS.gasFaktor;
+    const stromTariff = document.getElementById('strom-tariff-select').value;
+    const gasTariff = document.getElementById('gas-tariff-select').value;
+
+    // Zustand aktualisieren
+    appState.settings.monthlyPayment = monthlyPayment;
+    appState.settings.gasFaktor = gasFaktor;
+    appState.settings.stromTariff = stromTariff;
+    appState.settings.gasTariff = gasTariff;
+
+    // Zustand speichern, UI anpassen und neu rendern
+    saveAndRerender();
+    toggleInputFields(); // Wichtig: Felder sofort anpassen
+}
+
+function applySettingsToUI() {
+    document.getElementById('monthly-payment').value = appState.settings.monthlyPayment;
+    document.getElementById('gas-faktor').value = appState.settings.gasFaktor;
+    document.getElementById('strom-tariff-select').value = appState.settings.stromTariff;
+    document.getElementById('gas-tariff-select').value = appState.settings.gasTariff;
+}
+
+function addEntry() {
+    const monthInput = document.getElementById('entry-month').value;
+    const stromStart = parseFloat(document.getElementById('strom-start').value);
+    const stromEnd = parseFloat(document.getElementById('strom-end').value);
+    const gasStart = parseFloat(document.getElementById('gas-start').value);
+    const gasEnd = parseFloat(document.getElementById('gas-end').value);
+    const errorMessageEl = document.getElementById('error-message');
+
+    errorMessageEl.classList.add('hidden');
+
+    if (!monthInput) {
+        errorMessageEl.textContent = 'Bitte Monat & Jahr auswählen.';
+        errorMessageEl.classList.remove('hidden');
+        return;
+    }
+
+    const [yearStr, monthStr] = monthInput.split('-');
+    const entryId = `${yearStr}-${monthStr}`;
+    
+    // Überprüfung: Sind Tarife aktiv, müssen Zählerstände eingegeben werden
+    const isStromActive = appState.settings.stromTariff !== NO_TARIFF_SELECTED;
+    const isGasActive = appState.settings.gasTariff !== NO_TARIFF_SELECTED;
+
+    const stromVerbrauch = stromEnd - stromStart;
+    const gasVerbrauchM3 = gasEnd - gasStart;
+
+    if (isStromActive && (isNaN(stromStart) || isNaN(stromEnd) || stromVerbrauch < 0)) {
+        errorMessageEl.textContent = 'Fehler bei Strom: Zählerstände ungültig oder Endstand ist kleiner als Startstand.';
+        errorMessageEl.classList.remove('hidden');
+        return;
+    }
+
+    if (isGasActive && (isNaN(gasStart) || isNaN(gasEnd) || gasVerbrauchM3 < 0)) {
+        errorMessageEl.textContent = 'Fehler bei Gas: Zählerstände ungültig oder Endstand ist kleiner als Startstand.';
+        errorMessageEl.classList.remove('hidden');
+        return;
+    }
+
+    // Suche nach bestehendem Eintrag
+    const existingIndex = appState.entries.findIndex(e => e.id === entryId);
+
+    let newEntry = {
+        id: entryId,
+        year: parseInt(yearStr),
+        month: parseInt(monthStr),
+        monthName: getMonthName(parseInt(monthStr)),
+        monthlyPayment: appState.settings.monthlyPayment, // Aktuellen Abschlagswert für diesen Monat speichern
+        strom: {
+            start: isStromActive ? stromStart : 0,
+            end: isStromActive ? stromEnd : 0,
+            verbrauch: isStromActive ? stromVerbrauch : 0,
+            kosten: 0
+        },
+        gas: {
+            start: isGasActive ? gasStart : 0,
+            end: isGasActive ? gasEnd : 0,
+            verbrauchM3: isGasActive ? gasVerbrauchM3 : 0,
+            verbrauchKWh: 0,
+            kosten: 0
+        },
+        totalCosts: 0
+    };
+
+    // Kostenberechnung anwenden
+    recalculateEntry(newEntry);
+
+    // Eintrag hinzufügen oder aktualisieren
+    if (existingIndex > -1) {
+        appState.entries[existingIndex] = newEntry;
+    } else {
+        appState.entries.push(newEntry);
+        // Sortieren, damit prefillNextEntry funktioniert
+        appState.entries.sort((a, b) => a.id.localeCompare(b.id));
+    }
+
+    // Formular zurücksetzen (nur die Endstände)
+    document.getElementById('strom-end').value = '';
+    document.getElementById('gas-end').value = '';
+
+    saveAndRerender();
+}
+
+function deleteEntry(id) {
+    if (confirm(`Soll der Eintrag für ${id} wirklich gelöscht werden?`)) {
+        appState.entries = appState.entries.filter(e => e.id !== id);
+        saveAndRerender();
+    }
+}
+
+function clearAllData() {
+    if (confirm("ACHTUNG: Alle Monats-Einträge werden gelöscht. Fortfahren?")) {
+        appState.entries = [];
+        setEntryMonthToCurrent();
+        saveAndRerender();
+    }
+}
+
+function clearYearlyData() {
+    if (confirm("ACHTUNG: Alle gespeicherten Jahresbilanzen werden gelöscht. Fortfahren?")) {
+        appState.yearlySummaries = {};
+        saveAndRerender();
+    }
+}
+
 // --- UI & RENDERING ---
+function saveAndRerender() {
+    saveStateToLocalStorage();
+    render();
+}
+
 function render() {
     // Stellt sicher, dass alle Kosten mit dem aktuellen Tarif/Abschlag neu berechnet werden, falls Einstellungen geändert wurden
     recalculateAllEntries(); 
     renderHistory();
     renderSummary();
     prefillNextEntry(); 
-    populateComparisonDropdown(); 
-    renderComparison();
+    
+    // Wenn der Vergleich gerade sichtbar ist, aktualisiere ihn (wichtig nach saveCurrentSummaryAsYear)
+    if (!document.getElementById('comparison-section').classList.contains('hidden')) {
+        populateComparisonDropdown();
+    }
 }
 
+/**
+ * Befüllt die Startfelder für den nächsten Monat automatisch und setzt das Datum.
+ */
+function prefillNextEntry() {
+    // Sortiere nach ID (Jahr-Monat) aufsteigend, um den LETZTEN Eintrag zu erhalten
+    const sortedEntries = [...appState.entries].sort((a, b) => a.id.localeCompare(b.id));
+    const latestEntry = sortedEntries.slice(-1)[0];
+
+    // Lösche alle Zählerstände, falls keine Einträge vorhanden
+    if (!latestEntry) {
+        document.getElementById('strom-start').value = '';
+        document.getElementById('gas-start').value = '';
+        setEntryMonthToCurrent(); // Setze auf aktuellen Monat
+        return;
+    }
+    
+    // Trage die Endstände des letzten Eintrags als Startstände für den neuen Eintrag ein
+    if (appState.settings.stromTariff !== NO_TARIFF_SELECTED && latestEntry.strom.end > 0) {
+        document.getElementById('strom-start').value = latestEntry.strom.end.toFixed(2);
+    } else {
+        document.getElementById('strom-start').value = '';
+    }
+
+    if (appState.settings.gasTariff !== NO_TARIFF_SELECTED && latestEntry.gas.end > 0) {
+        document.getElementById('gas-start').value = latestEntry.gas.end.toFixed(2);
+    } else {
+        document.getElementById('gas-start').value = '';
+    }
+
+    // Setze das Datumsfeld auf den Monat NACH dem zuletzt gespeicherten Monat
+    const [year, month] = latestEntry.id.split('-').map(Number);
+    // Erstelle ein Datumsobjekt für den Monat des Eintrags
+    let lastEntryDate = new Date(year, month - 1, 1); 
+    // Füge einen Monat hinzu
+    lastEntryDate.setMonth(lastEntryDate.getMonth() + 1);
+
+    const nextYear = lastEntryDate.getFullYear();
+    const nextMonth = (lastEntryDate.getMonth() + 1).toString().padStart(2, '0');
+    
+    document.getElementById('entry-month').value = `${nextYear}-${nextMonth}`;
+}
+
+/**
+ * Macht die renderHistory robuster und zeigt die Monatsdetails an.
+ */
 function renderHistory() {
     const container = document.getElementById('history-container');
-    const noEntriesMessage = document.getElementById('no-entries');
-    container.innerHTML = ''; 
+    
+    let noEntriesMessage = document.getElementById('no-entries');
+    if (!noEntriesMessage) {
+        noEntriesMessage = document.createElement('p');
+        noEntriesMessage.id = 'no-entries';
+        noEntriesMessage.className = 'text-slate-500 text-center py-8';
+        noEntriesMessage.textContent = 'Noch keine Einträge vorhanden. 🤓';
+    }
 
+    container.innerHTML = ''; // Container leeren
+    
     if (appState.entries.length === 0) {
-        if (!document.getElementById('no-entries')) {
-            container.appendChild(noEntriesMessage);
-        }
+        container.appendChild(noEntriesMessage); // Nachricht anzeigen
         noEntriesMessage.classList.remove('hidden');
         return;
     }
     
-    noEntriesMessage.classList.add('hidden');
+    noEntriesMessage.classList.add('hidden'); // Nachricht ausblenden
 
     // Sortiere nach ID (Jahr-Monat) absteigend für die Anzeige
     const sortedEntries = [...appState.entries].sort((a, b) => b.id.localeCompare(a.id));
     
     sortedEntries.forEach(entry => {
-        // GEÄNDERT: Verwende den gespeicherten Abschlagswert für die Monatsbilanz. 
-        // Fallback für alte Einträge, die das Feld noch nicht haben.
         const paymentForThisMonth = entry.monthlyPayment !== undefined 
-                                   ? entry.monthlyPayment 
-                                   : appState.settings.monthlyPayment;
-                                   
+                                    ? entry.monthlyPayment 
+                                    : appState.settings.monthlyPayment;
+                                    
         const balance = entry.totalCosts - paymentForThisMonth;
         const isNachzahlung = balance > 0;
         const balanceColor = isNachzahlung ? 'text-red-600' : 'text-green-600';
@@ -417,518 +711,330 @@ function renderHistory() {
         const isEntryGasActive = entry.gas.verbrauchM3 > 0 || entry.gas.kosten > 0;
 
         const stromHtml = isEntryStromActive ? `
-            <div>
-                <p class="font-semibold flex items-center"><i class="fas fa-bolt mr-2 text-yellow-500"></i>Strom</p>
-                <p>Verbrauch: <span class="font-medium">${entry.strom.verbrauch.toFixed(2)} kWh</span></p>
-                <p>Kosten: <span class="font-medium">${formatCurrency(entry.strom.kosten, true)}</span></p>
+            <div class="p-3 border rounded-lg bg-yellow-50 border-yellow-200">
+                <p class="font-bold flex items-center text-slate-700"><i class="fas fa-bolt mr-2 text-yellow-600"></i>Strom</p>
+                <p class="text-xs text-slate-500 mt-1">Verbrauch: <span class="font-medium text-slate-700">${entry.strom.verbrauch.toFixed(2)} kWh</span> | Kosten: <span class="font-medium text-slate-700">${formatCurrency(entry.strom.kosten, true)}</span></p>
             </div>
         ` : '';
 
         const gasHtml = isEntryGasActive ? `
-            <div>
-                <p class="font-semibold flex items-center"><i class="fas fa-fire mr-2 text-orange-500"></i>Gas</p>
-                <p>Verbrauch: <span class="font-medium">${entry.gas.verbrauchM3.toFixed(2)} m³ (${entry.gas.verbrauchKWh.toFixed(2)} kWh)</span></p>
-                <p>Kosten: <span class="font-medium">${formatCurrency(entry.gas.kosten, true)}</span></p>
+            <div class="p-3 border rounded-lg bg-orange-50 border-orange-200">
+                <p class="font-bold flex items-center text-slate-700"><i class="fas fa-fire mr-2 text-orange-600"></i>Gas</p>
+                <p class="text-xs text-slate-500 mt-1">Verbrauch: <span class="font-medium text-slate-700">${entry.gas.verbrauchM3.toFixed(2)} m³ (${entry.gas.verbrauchKWh.toFixed(2)} kWh)</span> | Kosten: <span class="font-medium text-slate-700">${formatCurrency(entry.gas.kosten, true)}</span></p>
             </div>
         ` : '';
         
-        const gridClass = (isEntryStromActive && isEntryGasActive) ? 'grid-cols-2' : 'grid-cols-1';
-
-
-        const entryElement = document.createElement('div');
-        entryElement.className = 'bg-slate-50 p-4 rounded-xl border-l-4 seasonal-border-primary border-opacity-50 transition hover:shadow-lg';
-        entryElement.innerHTML = `
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="font-bold text-xl text-slate-900">${entry.monthName} ${entry.year}</p>
-                    <p class="text-sm font-semibold text-slate-600">
-                        Geschätzte Kosten: <span class="${entry.totalCosts > paymentForThisMonth ? 'text-red-500' : 'text-green-500'}">${formatCurrency(entry.totalCosts, true)}</span>
-                    </p>
-                </div>
-                <div class="text-right">
-                    <p class="text-lg font-extrabold ${balanceColor}">${balanceText}: ${formatCurrency(Math.abs(balance), true)}</p>
-                    <p class="text-xs text-slate-500">Abschlag: ${formatCurrency(paymentForThisMonth)}</p>
-                    <button onclick="deleteEntry('${entry.id}')" class="text-slate-400 hover:text-red-600 text-xs mt-2 transition">
-                        <i class="fas fa-trash-alt mr-1"></i> Löschen
-                    </button>
-                </div>
+        const historyItem = document.createElement('div');
+        historyItem.className = 'bg-white p-5 rounded-xl shadow-md border border-slate-200';
+        historyItem.innerHTML = `
+            <div class="flex justify-between items-start border-b pb-3 mb-3 border-slate-100">
+                <h3 class="text-xl font-extrabold text-slate-800">${entry.monthName} ${entry.year}</h3>
+                <button onclick="deleteEntry('${entry.id}')" class="text-red-500 hover:text-red-700 transition" aria-label="Eintrag löschen">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
             </div>
-            <div class="mt-3 pt-3 border-t border-slate-200 grid ${gridClass} gap-4 text-xs text-slate-600">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 ${stromHtml}
                 ${gasHtml}
             </div>
+
+            <div class="grid grid-cols-2 gap-4 text-sm font-semibold text-slate-700 mt-4 pt-4 border-t border-slate-100">
+                <div>
+                    <p>Gesamtkosten</p>
+                    <p class="text-xl font-extrabold text-slate-800">${formatCurrency(entry.totalCosts, true)}</p>
+                </div>
+                <div>
+                    <p>Monats-Bilanz (${balanceText})</p>
+                    <p class="text-xl font-extrabold ${balanceColor}">${formatCurrency(Math.abs(balance), true)}</p>
+                </div>
+            </div>
+
         `;
-        container.appendChild(entryElement);
+        container.appendChild(historyItem);
     });
 }
 
 function renderSummary() {
-    const currentYear = new Date().getFullYear();
-    document.getElementById('current-year-display').textContent = `Aktuelles Jahr: ${currentYear}`;
+    // Ermittle das Jahr, das gerade aktiv bearbeitet wird.
+    let activeYear = new Date().getFullYear(); 
+    if (appState.entries.length > 0) {
+        // Finde das Jahr des letzten (neuesten) Eintrags
+        const sortedEntries = [...appState.entries].sort((a, b) => b.id.localeCompare(a.id));
+        activeYear = sortedEntries[0].year;
+    }
     
-    // Filtriert Einträge für das aktuelle Jahr
-    const currentYearEntries = appState.entries.filter(e => e.year === currentYear);
+    const yearEntries = appState.entries.filter(e => e.year === activeYear);
 
-    const totalStromCosts = currentYearEntries.reduce((sum, entry) => sum + entry.strom.kosten, 0);
-    const totalGasCosts = currentYearEntries.reduce((sum, entry) => sum + entry.gas.kosten, 0);
-    const totalCosts = totalStromCosts + totalGasCosts;
-    
-    // Summe der gespeicherten Abschläge
-    const totalPaid = currentYearEntries.reduce((sum, entry) => sum + (entry.monthlyPayment !== undefined ? entry.monthlyPayment : appState.settings.monthlyPayment), 0);
-    
+    // Initialisiere die Zusammenfassung
+    let totalCosts = 0;
+    let totalStromCosts = 0;
+    let totalGasCosts = 0;
+    let monthsWithEntry = 0;
+
+    yearEntries.forEach(entry => {
+        totalCosts += entry.totalCosts;
+        totalStromCosts += entry.strom.kosten;
+        totalGasCosts += entry.gas.kosten;
+        monthsWithEntry++;
+    });
+
+    const monthlyPayment = appState.settings.monthlyPayment;
+    const totalPaid = monthsWithEntry * monthlyPayment;
     const balance = totalPaid - totalCosts;
 
-    document.getElementById('summary-strom').textContent = formatCurrency(totalStromCosts, true);
-    document.getElementById('summary-gas').textContent = formatCurrency(totalGasCosts, true);
+    // UI-Aktualisierungen
+    document.getElementById('current-year-display').textContent = `Aktuelles Jahr: ${activeYear}`;
     document.getElementById('summary-total-costs').textContent = formatCurrency(totalCosts, true);
     document.getElementById('summary-paid').textContent = formatCurrency(totalPaid, true);
     
     const balanceEl = document.getElementById('summary-balance');
-    balanceEl.textContent = formatCurrency(balance, true);
-    balanceEl.classList.toggle('text-green-600', balance >= 0);
-    balanceEl.classList.toggle('text-red-600', balance < 0);
+    balanceEl.textContent = formatCurrency(Math.abs(balance), true);
+    balanceEl.className = balance >= 0 ? 'text-3xl font-extrabold text-green-600 mt-1' : 'text-3xl font-extrabold text-red-600 mt-1'; // Farbe anpassen
+
+    document.getElementById('summary-strom').textContent = formatCurrency(totalStromCosts, true);
+    document.getElementById('summary-gas').textContent = formatCurrency(totalGasCosts, true);
+    
+    // LOGIK FÜR DEN JAHRESABSCHLUSS-HINWEIS
+    const hintEl = document.getElementById('end-of-year-hint');
+    // Hinweis anzeigen, wenn 12 oder mehr Monate erfasst wurden (oder man ins Folgejahr gesprungen ist)
+    if (monthsWithEntry >= 12 && activeYear < new Date().getFullYear() + 2) { 
+        hintEl.classList.remove('hidden');
+    } else {
+        hintEl.classList.add('hidden');
+    }
+}
+
+
+function saveCurrentSummaryAsYear() {
+    // Ermittle das Jahr, das gerade bearbeitet wird (das Jahr des aktuellsten Eintrags)
+    if (appState.entries.length === 0) {
+         alert("Es sind keine Monatsdaten vorhanden, die gespeichert werden könnten.");
+         return;
+    }
+    
+    const sortedEntries = [...appState.entries].sort((a, b) => b.id.localeCompare(a.id));
+    const yearToSave = sortedEntries[0].year;
+    const yearEntries = appState.entries.filter(e => e.year === yearToSave);
+
+    // VORLÄUFIGE BERECHNUNG DER JAHRESWERTE
+    let totalCosts = 0;
+    let totalPaid = 0;
+    let totalStromKWh = 0;
+    let totalGasKWh = 0;
+    let monthsCount = 0;
+
+    yearEntries.forEach(entry => {
+        totalCosts += entry.totalCosts;
+        totalPaid += (entry.monthlyPayment !== undefined ? entry.monthlyPayment : appState.settings.monthlyPayment);
+        totalStromKWh += entry.strom.verbrauch;
+        totalGasKWh += entry.gas.verbrauchKWh;
+        monthsCount++;
+    });
+    
+    // ZUSAMMENFASSUNG
+    const summary = {
+        totalCosts: totalCosts,
+        totalPaid: totalPaid,
+        balance: totalPaid - totalCosts,
+        totalStromKWh: totalStromKWh,
+        totalGasKWh: totalGasKWh,
+        monthsCount: monthsCount
+    };
+
+    // PRÜFUNG und BESTÄTIGUNG
+    if (appState.yearlySummaries[yearToSave]) {
+        if (!confirm(`Es existiert bereits eine Bilanz für ${yearToSave}. Soll diese überschrieben werden und die ${yearToSave}-Monatsdaten gelöscht werden?`)) {
+            return;
+        }
+    } else {
+         if (!confirm(`Soll die Bilanz für das Jahr ${yearToSave} gespeichert werden? Alle Monatsdaten von ${yearToSave} werden gelöscht!`)) {
+            return;
+        }
+    }
+    
+    // 1. Bilanz speichern
+    appState.yearlySummaries[yearToSave] = summary;
+
+    // 2. LÖSCHUNG DER MONATSDATEN DIESES JAHRES!
+    appState.entries = appState.entries.filter(e => e.year !== yearToSave);
+
+    // 3. Status speichern und UI neu rendern (setzt Formular auf nächsten Monat im nächsten Jahr)
+    saveAndRerender();
+    alert(`Jahresbilanz für ${yearToSave} wurde erfolgreich gespeichert! Die Monatsdaten wurden gelöscht.`);
+    
+    // Blende den Vergleichs-Abschnitt aus und setze den Button-Text zurück, wenn der Jahresabschluss erfolgt
+    document.getElementById('comparison-section').classList.add('hidden');
+    document.getElementById('toggle-comparison-btn').innerHTML = '<i class="fas fa-balance-scale mr-1"></i> Vergleich anzeigen';
 }
 
 function populateComparisonDropdown() {
     const select = document.getElementById('yearly-comparison-select');
-    const currentYear = new Date().getFullYear().toString();
-    const years = Object.keys(appState.yearlySummaries).sort().reverse();
+    // Nur abgeschlossene Jahre (die auch gespeichert wurden) anzeigen.
+    const years = Object.keys(appState.yearlySummaries).sort().reverse(); 
     
-    select.innerHTML = '<option value="">Kein Vergleich</option>';
+    // Finde das Jahr, das gerade live bearbeitet wird (um es auszuschließen)
+    let activeYear = new Date().getFullYear().toString();
+    if (appState.entries.length > 0) {
+        activeYear = appState.entries.sort((a, b) => b.id.localeCompare(a.id))[0].year.toString();
+    }
     
-    let hasEntries = false;
-    years.forEach(year => {
-        if (year !== currentYear.toString()) { 
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = `Bilanz ${year}`;
-            select.appendChild(option);
-            hasEntries = true;
+    // Filtere das aktiv bearbeitete Jahr aus der Vergleichsliste (da es nicht "abgeschlossen" ist)
+    const availableYears = years.filter(year => year !== activeYear);
+    
+    // Wenn keine gespeicherten Jahre vorhanden sind, deaktiviere den Button (optional)
+    const comparisonButton = document.getElementById('toggle-comparison-btn');
+    comparisonButton.disabled = availableYears.length === 0;
+
+    select.innerHTML = '';
+    
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = availableYears.length === 0 ? 'Kein Vorjahr gespeichert' : '--- Jahr auswählen ---';
+    select.appendChild(defaultOption);
+
+    let defaultSelection = '';
+    // Wählt das neueste gespeicherte Jahr als Standard im Dropdown aus
+    for (const year of availableYears) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = `Vergleich mit ${year}`;
+        select.appendChild(option);
+        
+        if (defaultSelection === '') {
+            defaultSelection = year;
         }
-    });
+    }
     
-    document.getElementById('comparison-section').classList.toggle('hidden', !hasEntries);
+    select.value = defaultSelection;
+    renderComparison(); // Rendert den Vergleich sofort mit der Standardauswahl
 }
 
 function renderComparison() {
     const selectedYear = document.getElementById('yearly-comparison-select').value;
     const display = document.getElementById('comparison-display');
-    
+
     if (!selectedYear || !appState.yearlySummaries[selectedYear]) {
         display.innerHTML = '<p class="text-slate-500">Wählen Sie ein Jahr zum Vergleich aus.</p>';
         return;
     }
+
+    // Hole das aktuell bearbeitete Jahr, dessen live-Daten verglichen werden
+    let activeYear = new Date().getFullYear();
+    if (appState.entries.length > 0) {
+        activeYear = appState.entries.sort((a, b) => b.id.localeCompare(a.id))[0].year;
+    }
     
-    const summary = appState.yearlySummaries[selectedYear];
-    const balanceColor = summary.balance >= 0 ? 'text-green-600' : 'text-red-600';
-    const balanceText = summary.balance >= 0 ? 'Guthaben' : 'Nachzahlung';
+    const currentYearSummary = calculateCurrentYearSummary(activeYear); 
+    const compareSummary = appState.yearlySummaries[selectedYear];
+    
+    // Hilfsfunktion zur Formatierung der Bilanzdifferenz (Kosten)
+    const formatDiff = (current, compare) => {
+        const diff = current - compare;
+        const sign = diff >= 0 ? '<i class="fas fa-arrow-up text-red-500"></i>' : '<i class="fas fa-arrow-down text-green-500"></i>';
+        const color = diff >= 0 ? 'text-red-500' : 'text-green-500';
+        return `<span class="${color} font-extrabold text-sm">${sign} ${formatCurrency(Math.abs(diff), true)}</span>`;
+    };
+    
+    // Hilfsfunktion zur Formatierung der Verbrauchs-Differenz (kWh)
+    const formatKWhDiff = (current, compare) => {
+        const diff = current - compare;
+        const sign = diff >= 0 ? '<i class="fas fa-arrow-up text-red-500"></i>' : '<i class="fas fa-arrow-down text-green-500"></i>';
+        const color = diff >= 0 ? 'text-red-500' : 'text-green-500';
+        return `<span class="${color} font-extrabold text-sm">${sign} ${Math.abs(diff).toFixed(0)} kWh</span>`;
+    };
+
+    // Anzeige der Bilanz
+    const totalCostsDiffHtml = formatDiff(currentYearSummary.totalCosts, compareSummary.totalCosts);
+
+    // Anzeige des Verbrauchs
+    const stromKWhDiff = formatKWhDiff(currentYearSummary.totalStromKWh, compareSummary.totalStromKWh);
+    const gasKWhDiff = formatKWhDiff(currentYearSummary.totalGasKWh, compareSummary.totalGasKWh);
+
 
     display.innerHTML = `
-        <p class="font-bold text-lg text-slate-800 mb-2">Vergleich: Bilanz ${selectedYear}</p>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-            <div class="p-2 bg-slate-100 rounded-lg">
-                <p class="font-medium text-slate-600">Gesamtkosten:</p>
-                <p class="font-extrabold text-slate-800">${formatCurrency(summary.totalCosts)}</p>
+        <h4 class="text-lg font-bold mb-3 text-slate-700">Vergleich des Jahres ${activeYear} mit ${selectedYear}</h4>
+        
+        <div class="space-y-4">
+            <div class="p-3 bg-white rounded-lg border border-slate-200">
+                <p class="font-bold text-slate-700 mb-1 flex items-center"><i class="fas fa-euro-sign mr-2 text-indigo-500"></i> Gesamtkosten</p>
+                <div class="grid grid-cols-3 gap-2 text-sm">
+                    <div class="text-left">
+                        <p class="text-xs text-slate-500">${activeYear}</p>
+                        <p class="font-extrabold text-base text-slate-800">${formatCurrency(currentYearSummary.totalCosts, true)}</p>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-xs text-slate-500">${selectedYear}</p>
+                        <p class="font-extrabold text-base text-slate-800">${formatCurrency(compareSummary.totalCosts, true)}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Differenz</p>
+                        <p class="mt-1">${totalCostsDiffHtml}</p>
+                    </div>
+                </div>
             </div>
-             <div class="p-2 bg-slate-100 rounded-lg">
-                <p class="font-medium text-slate-600">Abschläge:</p>
-                <p class="font-extrabold text-slate-800">${formatCurrency(summary.totalPaid)}</p>
+
+            <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p class="font-bold text-slate-700 mb-1 flex items-center"><i class="fas fa-bolt mr-2 text-yellow-500"></i> Stromverbrauch (kWh)</p>
+                <div class="grid grid-cols-3 gap-2 text-sm">
+                    <div class="text-left">
+                        <p class="text-xs text-slate-500">${activeYear}</p>
+                        <p class="font-extrabold text-base text-slate-800">${currentYearSummary.totalStromKWh.toFixed(0)} kWh</p>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-xs text-slate-500">${selectedYear}</p>
+                        <p class="font-extrabold text-base text-slate-800">${compareSummary.totalStromKWh.toFixed(0)} kWh</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Differenz</p>
+                        <p class="mt-1">${stromKWhDiff}</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-span-2 p-2 rounded-lg ${summary.balance >= 0 ? 'bg-green-100' : 'bg-red-100'}">
-                <p class="font-medium text-slate-600">Endbilanz:</p>
-                <p class="font-extrabold ${balanceColor} text-base">${balanceText}: ${formatCurrency(Math.abs(summary.balance))}</p>
+
+            <div class="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                <p class="font-bold text-slate-700 mb-1 flex items-center"><i class="fas fa-fire mr-2 text-orange-500"></i> Gasverbrauch (kWh)</p>
+                 <div class="grid grid-cols-3 gap-2 text-sm">
+                    <div class="text-left">
+                        <p class="text-xs text-slate-500">${activeYear}</p>
+                        <p class="font-extrabold text-base text-slate-800">${currentYearSummary.totalGasKWh.toFixed(0)} kWh</p>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-xs text-slate-500">${selectedYear}</p>
+                        <p class="font-extrabold text-base text-slate-800">${compareSummary.totalGasKWh.toFixed(0)} kWh</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Differenz</p>
+                        <p class="mt-1">${gasKWhDiff}</p>
+                    </div>
+                </div>
             </div>
         </div>
-        <p class="text-xs text-slate-500 mt-2">(${summary.months} Monat${summary.months !== 1 ? 'e' : ''} erfasst)</p>
+        <p class="text-xs text-slate-500 mt-4 border-t pt-2">Basierend auf ${currentYearSummary.monthsCount} Monat(en) in ${activeYear} vs. ${compareSummary.monthsCount} Monat(en) in ${selectedYear}.</p>
     `;
 }
 
-function saveCurrentSummaryAsYear() {
-    const currentYear = new Date().getFullYear();
-    const currentYearEntries = appState.entries.filter(e => e.year === currentYear);
+// Hilfsfunktion zur Berechnung der aktuellen Jahresübersicht (für den Vergleich)
+function calculateCurrentYearSummary(year) {
+    const entries = appState.entries.filter(e => e.year === year);
     
-    if (currentYearEntries.length === 0) {
-        alert("Es sind noch keine Monats-Einträge für dieses Jahr vorhanden, um eine Bilanz zu speichern.");
-        return;
-    }
-    
-    if (appState.yearlySummaries[currentYear]) {
-        if (!confirm(`Die Jahresbilanz für ${currentYear} existiert bereits. Überschreiben?`)) {
-            return;
-        }
-    }
-    
-    const totalStromCosts = currentYearEntries.reduce((sum, entry) => sum + entry.strom.kosten, 0);
-    const totalGasCosts = currentYearEntries.reduce((sum, entry) => sum + entry.gas.kosten, 0);
-    const totalCosts = totalStromCosts + totalGasCosts;
-    // Summe der gespeicherten Abschläge
-    const totalPaid = currentYearEntries.reduce((sum, entry) => sum + (entry.monthlyPayment !== undefined ? entry.monthlyPayment : appState.settings.monthlyPayment), 0);
-    const balance = totalPaid - totalCosts;
+    let totalCosts = 0;
+    let totalPaid = 0;
+    let totalStromKWh = 0;
+    let totalGasKWh = 0;
+    let monthsCount = 0;
 
-    appState.yearlySummaries[currentYear] = {
-        totalCosts: totalCosts,
-        totalPaid: totalPaid,
-        balance: balance,
-        months: currentYearEntries.length,
-        stromCosts: totalStromCosts,
-        gasCosts: totalGasCosts
-    };
-    
-    saveAndRerender();
-    alert(`Jahresbilanz für ${currentYear} gespeichert!`);
-}
-
-function prefillNextEntry() {
-    
-    const stromStartEl = document.getElementById('strom-start');
-    const gasStartEl = document.getElementById('gas-start');
-    const stromEndEl = document.getElementById('strom-end');
-    const gasEndEl = document.getElementById('gas-end');
-    const monthInputEl = document.getElementById('entry-month');
-
-    // 1. Zuerst alle Zählerstand-Endfelder leeren
-    stromEndEl.value = '';
-    gasEndEl.value = '';
-    
-    if (appState.entries.length > 0) {
-        // Da addEntry() das Array sofort nach Hinzufügen sortiert, ist der letzte Eintrag der aktuellste
-        const lastEntry = appState.entries[appState.entries.length - 1]; 
-        
-        // 2. Zählerstände vorfüllen
-        
-        if (appState.settings.stromTariff !== NO_TARIFF_SELECTED && lastEntry.strom.end > 0) {
-            // Füllt den Startwert mit dem Endwert des letzten Eintrags
-            stromStartEl.value = lastEntry.strom.end; 
-        } else {
-            stromStartEl.value = '';
-        }
-        
-        if (appState.settings.gasTariff !== NO_TARIFF_SELECTED && lastEntry.gas.end > 0) {
-            // Füllt den Startwert mit dem Endwert des letzten Eintrags
-            gasStartEl.value = lastEntry.gas.end;
-        } else {
-            gasStartEl.value = '';
-        }
-
-        // 3. Datum auf den nächsten Monat setzen
-        const [lastYear, lastMonth] = lastEntry.id.split('-').map(Number);
-        const lastDate = new Date(lastYear, lastMonth - 1, 1); 
-        lastDate.setMonth(lastDate.getMonth() + 1); 
-
-        const nextYear = lastDate.getFullYear();
-        const nextMonth = (lastDate.getMonth() + 1).toString().padStart(2, '0'); 
-        
-        const nextEntryMonthValue = `${nextYear}-${nextMonth}`;
-        
-        monthInputEl.value = nextEntryMonthValue;
-
-    } else {
-        // Bei erstem Eintrag: Startfelder leer lassen, Datum auf aktuellen Monat setzen
-        stromStartEl.value = '';
-        gasStartEl.value = '';
-        setEntryMonthToCurrent();
-    }
-}
-
-
-// --- ACTIONS & EVENT HANDLERS ---
-function addEntry() {
-    const monthInput = document.getElementById('entry-month').value;
-    const stromStart = parseFloat(document.getElementById('strom-start').value);
-    const stromEnd = parseFloat(document.getElementById('strom-end').value);
-    const gasStart = parseFloat(document.getElementById('gas-start').value);
-    const gasEnd = parseFloat(document.getElementById('gas-end').value);
-
-    const stromTariffKey = appState.settings.stromTariff;
-    const gasTariffKey = appState.settings.gasTariff;
-    const stromTariffSelected = stromTariffKey !== NO_TARIFF_SELECTED;
-    const gasTariffSelected = gasTariffKey !== NO_TARIFF_SELECTED;
-
-    if (!monthInput || (!stromTariffSelected && !gasTariffSelected)) {
-        showError("Bitte füllen Sie das Datum aus und wählen Sie mindestens einen Tarif in den Einstellungen.");
-        return;
-    }
-
-    const hasValidStromData = stromTariffSelected && !isNaN(stromStart) && !isNaN(stromEnd);
-    const hasValidGasData = gasTariffSelected && !isNaN(gasStart) && !isNaN(gasEnd);
-
-    if (stromTariffSelected && !hasValidStromData) {
-        showError("Strom: Bitte füllen Sie Start- und Endstand korrekt aus.");
-        return;
-    }
-    
-    if (gasTariffSelected && !hasValidGasData) {
-        showError("Gas: Bitte füllen Sie Start- und Endstand korrekt aus.");
-        return;
-    }
-
-    if (hasValidStromData && stromEnd < stromStart) {
-        showError("Strom: Der aktuelle Zählerstand muss höher sein als der Vormonatsstand.");
-        return;
-    }
-    if (hasValidGasData && gasEnd < gasStart) {
-        showError("Gas: Der aktuelle Zählerstand muss höher sein als der Vormonatsstand.");
-        return;
-    }
-    
-    const entryId = monthInput;
-    if (appState.entries.some(e => e.id === entryId)) {
-        showError(`Ein Eintrag für diesen Monat (${entryId}) existiert bereits. Bitte wählen Sie den nächsten Monat.`);
-        return;
-    }
-    hideError();
-
-    // --- STROM Calculations ---
-    let stromVerbrauch = 0;
-    let stromKosten = 0;
-    if (hasValidStromData) {
-        const stromTariff = TARIFF_DATA.strom[stromTariffKey];
-        stromVerbrauch = stromEnd - stromStart;
-        // Grundpreis monatlich
-        stromKosten = (stromVerbrauch * stromTariff.arbeitspreis) + (stromTariff.grundpreis / 12); 
-    }
-
-    // --- GAS Calculations ---
-    let gasVerbrauchM3 = 0;
-    let gasVerbrauchKWh = 0;
-    let gasKosten = 0;
-    if (hasValidGasData) {
-        const gasTariffData = TARIFF_DATA.gas[gasTariffKey];
-        gasVerbrauchM3 = gasEnd - gasStart;
-        gasVerbrauchKWh = gasVerbrauchM3 * appState.settings.gasFaktor;
-        
-        // Berechne den aktuellen Jahresverbrauch für die Tier-Stufe
-        const currentEntriesCount = appState.entries.length;
-        // Wir müssen alle vorhandenen Einträge + den neuen Eintrag in die Berechnung einbeziehen.
-        const totalGasKWhSoFar = appState.entries.reduce((sum, e) => sum + e.gas.verbrauchKWh, 0) + gasVerbrauchKWh;
-        const estimatedAnnualKWh = (totalGasKWhSoFar / (currentEntriesCount + 1)) * 12;
-        
-        const gasTier = gasTariffData.tiers.find(t => estimatedAnnualKWh <= t.bis);
-        
-        // Grundpreis monatlich
-        gasKosten = (gasVerbrauchKWh * gasTier.arbeitspreis) + (gasTier.grundpreis / 12); 
-    }
-
-    const [year, month] = monthInput.split('-');
-    const monthName = new Date(year, month - 1, 1).toLocaleString('de-DE', { month: 'long' });
-
-    const newEntry = {
-        id: entryId, year: parseInt(year), month: parseInt(month), monthName: monthName,
-        // Speichert den aktuellen Abschlag, wie er gerade in den Einstellungen steht (dies ist der korrigierte Wert)
-        monthlyPayment: appState.settings.monthlyPayment, 
-        strom: { 
-            start: hasValidStromData ? stromStart : 0, 
-            end: hasValidStromData ? stromEnd : 0, 
-            verbrauch: stromVerbrauch, 
-            kosten: stromKosten 
-        },
-        gas: { 
-            start: hasValidGasData ? gasStart : 0, 
-            end: hasValidGasData ? gasEnd : 0, 
-            verbrauchM3: gasVerbrauchM3, 
-            verbrauchKWh: gasVerbrauchKWh, 
-            kosten: gasKosten 
-        },
-        totalCosts: stromKosten + gasKosten,
-    };
-
-    appState.entries.push(newEntry);
-    
-    // Sortiere die Einträge sofort chronologisch (A-Z auf ID), damit prefillNextEntry den korrekten letzten Eintrag findet
-    appState.entries.sort((a, b) => a.id.localeCompare(b.id));
-    
-    // 1. Hole den Standard-Abschlag aus den gespeicherten Settings (vor der temporären Änderung)
-    const savedSettingsString = localStorage.getItem('energyAppSettings');
-    let storedMonthlyPayment = DEFAULT_SETTINGS.monthlyPayment;
-
-    if (savedSettingsString) {
-        const parsedSettings = JSON.parse(savedSettingsString);
-        // Hier muss der *ursprüngliche* reguläre Abschlag geholt werden, der nicht der gerade eingegebene (korrigierte) Wert ist.
-        // Da saveSettings() und loadStateFromLocalStorage() nur den Wert aus dem Input-Feld verwenden, müssen wir hier einen kleinen Umweg gehen, 
-        // um den Wert auf den ursprünglichen Standard-Abschlag zurückzusetzen, der in den Settings persistiert ist, falls er temporär erhöht wurde.
-        // Da die Abschlagszahlung jetzt *im Eintrag* gespeichert ist, können wir den globalen Wert einfach auf den zuletzt gespeicherten Standardwert zurücksetzen.
-        
-        // Da der Code keine separate Speicherung für den "Standard"-Abschlag hat, nutzen wir den Wert, 
-        // der kurz vor dem Speichern in appState.settings.monthlyPayment stand, um ihn in den Eintrag zu übernehmen.
-        // Um das Eingabefeld zurückzusetzen, setzen wir es auf den Wert aus dem localStorage, wenn es existiert.
-        
-        // NEU: Nur das Eingabefeld für den Endstand zurücksetzen, damit prefillNextEntry die Felder korrekt belegt.
-        document.getElementById('strom-end').value = '';
-        document.getElementById('gas-end').value = '';
-        
-        // Setze den globalen Abschlag in den Einstellungen NICHT zurück, damit der Nutzer ihn manuell anpassen kann.
-        // Der wichtige Teil ist, dass der korrigierte Wert im Eintrag gespeichert wurde.
-
-    } else {
-        // Bei erstem Eintrag: Zurücksetzen auf Default
-        appState.settings.monthlyPayment = DEFAULT_SETTINGS.monthlyPayment;
-        document.getElementById('monthly-payment').value = DEFAULT_SETTINGS.monthlyPayment;
-    }
-
-    saveAndRerender();
-}
-
-function deleteEntry(entryId) {
-    if (confirm("Diesen Eintrag wirklich löschen?")) {
-        appState.entries = appState.entries.filter(entry => entry.id !== entryId);
-        // Nach dem Löschen neu sortieren
-        appState.entries.sort((a, b) => a.id.localeCompare(b.id)); 
-        saveAndRerender();
-    }
-}
-
-function saveSettings() {
-    // Speichert den Wert, wie er gerade im Feld steht.
-    appState.settings.monthlyPayment = parseFloat(document.getElementById('monthly-payment').value) || 0;
-    appState.settings.stromTariff = document.getElementById('strom-tariff-select').value;
-    appState.settings.gasTariff = document.getElementById('gas-tariff-select').value;
-    appState.settings.gasFaktor = parseFloat(document.getElementById('gas-faktor').value) || 0;
-    
-    saveAndRerender(); // Verwendet saveAndRerender für die konsistente Aktualisierung der UI
-}
-
-function clearAllData() {
-    if (confirm("Sind Sie sicher, dass Sie alle monatlichen Zählerstandsdaten löschen möchten? Die gespeicherten Jahresbilanzen bleiben erhalten.")) {
-        appState.entries = []; 
-        localStorage.removeItem('energyAppEntries'); 
-        render();
-        alert("Alle monatlichen Zählerstandsdaten wurden gelöscht.");
-    }
-}
-
-function clearYearlyData() {
-    if (confirm("Sind Sie sicher, dass Sie ALLE gespeicherten Jahresbilanzen löschen möchten?")) {
-        appState.yearlySummaries = {}; 
-        localStorage.removeItem('energyAppYearlySummaries'); 
-        
-        populateComparisonDropdown(); 
-        renderComparison(); 
-        
-        alert("Alle gespeicherten Jahresbilanzen wurden gelöscht.");
-    }
-}
-
-function recalculateAllEntries() {
-    const tempEntries = [];
-
-    if (appState.entries.length === 0) return;
-
-    // Einträge müssen chronologisch sortiert sein, um die Gas-Tier-Berechnung korrekt durchzuführen
-    const sortedEntries = [...appState.entries].sort((a, b) => a.id.localeCompare(b.id));
-
-    sortedEntries.forEach(entry => {
-        const stromTariffKey = appState.settings.stromTariff;
-        const gasTariffKey = appState.settings.gasTariff;
-        const stromTariffSelected = stromTariffKey !== NO_TARIFF_SELECTED;
-        const gasTariffSelected = gasTariffKey !== NO_TARIFF_SELECTED;
-
-        let stromKosten = 0;
-        let gasKosten = 0;
-        // Verwende immer die gespeicherten Verbrauchswerte zur Neuberechnung
-        let stromVerbrauch = entry.strom.verbrauch; 
-        let gasVerbrauchM3 = entry.gas.verbrauchM3;
-        // NEUE ANPASSUNG: Gasverbrauch KWh wird mit dem aktuellen Faktor NEU berechnet
-        let gasVerbrauchKWh = entry.gas.verbrauchM3 * appState.settings.gasFaktor;
-        
-        // 1. STROM-NEUBERECHNUNG
-        if (stromTariffSelected && stromVerbrauch > 0) {
-            const stromTariff = TARIFF_DATA.strom[stromTariffKey];
-            stromKosten = (stromVerbrauch * stromTariff.arbeitspreis) + (stromTariff.grundpreis / 12);
-        } else {
-            stromVerbrauch = 0;
-        }
-
-        // 2. GAS-NEUBERECHNUNG
-        if (gasTariffSelected && gasVerbrauchM3 > 0) {
-            const gasTariffData = TARIFF_DATA.gas[gasTariffKey];
-            
-            gasVerbrauchKWh = gasVerbrauchM3 * appState.settings.gasFaktor;
-            
-            // Re-Evaluation der Gas-Tier-Stufe basierend auf *bereits neu berechneten* Einträgen
-            const currentTotalKWh = tempEntries.reduce((sum, e) => sum + e.gas.verbrauchKWh, 0) + gasVerbrauchKWh;
-            const estimatedAnnualKWh = (currentTotalKWh / (tempEntries.length + 1)) * 12;
-            const gasTier = gasTariffData.tiers.find(t => estimatedAnnualKWh <= t.bis);
-            
-            gasKosten = (gasVerbrauchKWh * gasTier.arbeitspreis) + (gasTier.grundpreis / 12);
-        } else {
-            gasVerbrauchM3 = 0;
-            gasVerbrauchKWh = 0;
-        }
-
-        const updatedEntry = {
-            ...entry,
-            // Der gespeicherte Abschlagswert (monthlyPayment) bleibt unverändert!
-            strom: { 
-                ...entry.strom, 
-                kosten: stromKosten,
-                verbrauch: stromVerbrauch,
-                start: stromTariffSelected ? entry.strom.start : 0,
-                end: stromTariffSelected ? entry.strom.end : 0,
-            },
-            gas: { 
-                ...entry.gas, 
-                verbrauchKWh: gasVerbrauchKWh, 
-                kosten: gasKosten,
-                verbrauchM3: gasVerbrauchM3,
-                start: gasTariffSelected ? entry.gas.start : 0,
-                end: gasTariffSelected ? entry.gas.end : 0,
-            },
-            totalCosts: stromKosten + gasKosten,
-        };
-        
-        tempEntries.push(updatedEntry);
+    entries.forEach(entry => {
+        totalCosts += entry.totalCosts;
+        totalPaid += (entry.monthlyPayment !== undefined ? entry.monthlyPayment : appState.settings.monthlyPayment);
+        totalStromKWh += entry.strom.verbrauch;
+        totalGasKWh += entry.gas.verbrauchKWh;
+        monthsCount++;
     });
 
-    appState.entries = tempEntries;
+    return { totalCosts, totalPaid, totalStromKWh, totalGasKWh, monthsCount };
 }
-
-
-function toggleSettings() {
-    const settingsContent = document.getElementById('settings-content');
-    const chevronIcon = document.getElementById('settings-chevron');
-    if (settingsContent.classList.contains('hidden')) {
-        settingsContent.classList.remove('hidden');
-        chevronIcon.classList.add('rotate-180');
-    } else {
-        settingsContent.classList.add('hidden');
-        chevronIcon.classList.remove('rotate-180');
-    }
-}
-
-// --- UTILITY FUNCTIONS ---
-function applySettingsToUI() {
-    document.getElementById('monthly-payment').value = appState.settings.monthlyPayment;
-    document.getElementById('gas-faktor').value = appState.settings.gasFaktor;
-    document.getElementById('strom-tariff-select').value = appState.settings.stromTariff;
-    document.getElementById('gas-tariff-select').value = appState.settings.gasTariff;
-}
-
-/**
- * Speichert den Zustand und triggert das Rendern der UI.
- * Führt alle Rendering-Schritte sofort und synchron aus.
- */
-function saveAndRerender() {
-    saveStateToLocalStorage();
-    // Ruft alle Render-Funktionen auf und erzwingt die UI-Aktualisierung
-    render(); 
-}
-
-function formatCurrency(value, useAbs = false) {
-    const val = useAbs ? Math.abs(value) : value;
-    return val.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 });
-}
-
-function showError(message) {
-    const errorEl = document.getElementById('error-message');
-    errorEl.textContent = message;
-    errorEl.classList.remove('hidden');
-}
-
-function hideError() {
-    const errorEl = document.getElementById('error-message');
-    errorEl.classList.add('hidden');
-}
-
 </script>
+
 </body>
 </html>
