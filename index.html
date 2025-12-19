@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verbrauchs-Profi 3.0 | Premium Edition</title>
+    <title>Verbrauchsrechner Premium v3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .tab-active { color: #1e40af; border-bottom: 3px solid #1e40af; }
-        .input-focus:focus { outline: none; border-color: #3b82f6; ring: 2px; ring-color: #dbeafe; }
-        .history-item { transition: transform 0.2s; }
-        .history-item:hover { transform: translateX(5px); }
+        .tab-active { background: white; color: #2563eb; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="text-slate-900" onload="initApp()">
@@ -23,201 +21,160 @@
             <div class="relative">
                 <div class="absolute -top-4 -left-6 w-12 h-12 bg-blue-100 rounded-full blur-xl opacity-70"></div>
                 <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 italic relative">
-                    Verbrauchs-<span class="text-blue-600">Profi</span> 3.0 <span class="text-sm not-italic font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md ml-2">Premium</span>
+                    Verbrauchs-<span class="text-blue-600">Rechner</span> <span class="text-sm not-italic font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md ml-2">v3.2</span>
                 </h1>
                 <p class="text-slate-500 font-medium ml-1">Stadtwerke Blankenburg & TAZV Vorharz</p>
             </div>
             <div class="flex space-x-3">
-                <button onclick="exportData()" class="flex items-center px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all">
-                    <i class="fas fa-download mr-2 text-blue-500"></i> Export
-                </button>
-                <button onclick="document.getElementById('import-file-hidden').click()" class="flex items-center px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all">
-                    <i class="fas fa-upload mr-2 text-green-500"></i> Import
-                </button>
+                <button onclick="exportData()" class="flex items-center px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"><i class="fas fa-download mr-2 text-blue-500"></i> Export</button>
+                <button onclick="document.getElementById('import-file-hidden').click()" class="flex items-center px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all"><i class="fas fa-upload mr-2 text-green-500"></i> Import</button>
                 <input type="file" id="import-file-hidden" class="hidden" accept=".json" onchange="importData(event)">
             </div>
         </header>
 
         <nav class="flex space-x-1 mb-8 bg-slate-200/50 p-1.5 rounded-2xl w-fit mx-auto md:mx-0">
-            <button onclick="switchTab('energy')" id="tab-energy" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center">
-                <i class="fas fa-bolt-lightning mr-2"></i> Energie
-            </button>
-            <button onclick="switchTab('water')" id="tab-water" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center">
-                <i class="fas fa-droplet mr-2"></i> Wasser
-            </button>
-            <button onclick="switchTab('stats')" id="tab-stats" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center">
-                <i class="fas fa-chart-pie mr-2"></i> Statistik
-            </button>
+            <button onclick="switchTab('energy')" id="tab-energy" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center"><i class="fas fa-bolt-lightning mr-2"></i> Energie</button>
+            <button onclick="switchTab('water')" id="tab-water" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center"><i class="fas fa-droplet mr-2"></i> Wasser</button>
+            <button onclick="switchTab('stats')" id="tab-stats" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center"><i class="fas fa-chart-pie mr-2"></i> Statistik</button>
         </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
             <div class="lg:col-span-4 space-y-6">
-                
                 <div class="glass-card rounded-3xl p-6 shadow-xl shadow-slate-200/50">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold flex items-center text-slate-800">
-                            <span class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mr-3"><i class="fas fa-sliders"></i></span>
-                            Tarif-Setup
-                        </h2>
-                        <button onclick="toggleSettings()" class="text-slate-400 hover:text-blue-600 transition-colors">
-                            <i id="settings-chevron" class="fas fa-chevron-down transition-transform"></i>
-                        </button>
+                        <h2 class="text-lg font-bold flex items-center text-slate-800"><span class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mr-3"><i class="fas fa-sliders"></i></span>Tarif-Setup</h2>
+                        <button onclick="toggleSettings()" class="text-slate-400 hover:text-blue-600"><i id="settings-chevron" class="fas fa-chevron-down transition-transform"></i></button>
                     </div>
-
                     <div id="settings-content" class="space-y-4 hidden border-t border-slate-100 pt-4">
                         <div id="setup-energy-fields">
-                            <div class="mb-3">
-                                <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Stromtarif (SWB)</label>
-                                <select id="strom-tariff-select" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm font-semibold"></select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Gastarif (SWB)</label>
-                                <select id="gas-tariff-select" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm font-semibold"></select>
-                            </div>
+                            <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Stromtarif (SWB)</label>
+                            <select id="strom-tariff-select" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm font-semibold"></select>
+                            <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-3 block">Gastarif (SWB)</label>
+                            <select id="gas-tariff-select" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm font-semibold"></select>
                         </div>
-
                         <div id="setup-water-fields" class="hidden space-y-4">
-                            <div>
-                                <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">TAZV Anschlussart</label>
-                                <select id="water-type" onchange="applyWaterPreset()" class="w-full mt-1 bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-sm font-bold text-blue-800">
-                                    <option value="zentral">Zentral (Kanal)</option>
-                                    <option value="dezentral">Dezentral (Grube)</option>
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Trink €/m³</label>
-                                    <input type="number" id="w-price-t" step="any" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Abw. €/m³</label>
-                                    <input type="number" id="w-price-s" step="any" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm">
-                                </div>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100">
+                            <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">TAZV Anschluss</label>
+                            <select id="water-type" onchange="applyWaterPreset()" class="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-sm font-bold text-blue-800">
+                                <option value="zentral">Zentral (Kanal)</option>
+                                <option value="dezentral">Dezentral (Grube)</option>
+                            </select>
+                            <div class="bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <label for="w-has-garden" class="text-xs font-bold text-indigo-700">Gartenwasserzähler</label>
+                                    <label class="text-xs font-bold text-indigo-700">Gartenwasserzähler</label>
                                     <input type="checkbox" id="w-has-garden" onchange="toggleGardenField()" class="w-5 h-5 accent-indigo-600">
                                 </div>
+                                <div id="setup-garden-base-div" class="hidden">
+                                    <label class="text-[10px] font-extrabold text-indigo-400 uppercase">Garten-Grundgebühr (€/Monat)</label>
+                                    <input type="number" id="w-garden-base" step="0.01" class="w-full mt-1 bg-white border border-indigo-200 rounded-lg p-2 text-sm font-bold">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Regenwasser Fläche (m²)</label>
-                                <input type="number" id="w-rain-area" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm" placeholder="0 = Wohnung">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Trink €/m³</label><input type="number" id="w-price-t" step="any" class="w-full bg-slate-50 border rounded-xl p-2 text-sm"></div>
+                                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Abw. €/m³</label><input type="number" id="w-price-s" step="any" class="w-full bg-slate-50 border rounded-xl p-2 text-sm"></div>
                             </div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Haus-Grundgebühr (€/Monat)</label><input type="number" id="w-base" step="any" class="w-full bg-slate-50 border rounded-xl p-2 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Regenwasser Fläche (m²)</label><input type="number" id="w-rain-area" step="any" class="w-full bg-slate-50 border rounded-xl p-2 text-sm"></div>
                         </div>
-
-                        <div class="pt-4 border-t border-slate-100">
-                            <label class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Abschlag pro Monat (€)</label>
-                            <input type="number" id="monthly-payment" step="any" class="w-full mt-1 bg-white border-2 border-blue-100 rounded-xl p-3 text-lg font-extrabold text-blue-700 focus:border-blue-500 transition-all">
+                        <div class="pt-4 border-t">
+                            <label class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Monatlicher Abschlag (€)</label>
+                            <input type="number" id="monthly-payment" step="any" class="w-full mt-1 bg-white border-2 border-blue-100 rounded-xl p-3 text-lg font-extrabold text-blue-700">
                         </div>
-                        <button onclick="saveSettings()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">
-                            Konfiguration speichern
-                        </button>
+                        <button onclick="saveSettings()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-2xl hover:bg-blue-600 transition-all">Setup speichern</button>
                     </div>
                 </div>
 
-                <div class="glass-card rounded-3xl p-6 shadow-xl shadow-slate-200/50">
-                    <h2 class="text-lg font-bold flex items-center text-slate-800 mb-6">
-                        <span class="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center mr-3"><i class="fas fa-pen-to-square"></i></span>
-                        Verbrauch erfassen
-                    </h2>
-                    <div class="space-y-5">
+                <div id="input-container" class="glass-card rounded-3xl p-6 shadow-xl shadow-slate-200/50">
+                    <h2 class="text-lg font-bold flex items-center text-slate-800 mb-6"><span class="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center mr-3"><i class="fas fa-pen-to-square"></i></span>Verbrauch messen</h2>
+                    <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-3">
-                            <select id="entry-year-select" onchange="prefillLastValues()" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-blue-800"></select>
-                            <select id="entry-interval" onchange="updateIntervalLabels(); prefillLastValues();" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold">
+                            <select id="entry-year-select" onchange="prefillLastValues()" class="bg-slate-50 border rounded-xl p-3 text-sm font-bold text-blue-800"></select>
+                            <select id="entry-interval" onchange="updateIntervalLabels(); prefillLastValues();" class="bg-slate-50 border rounded-xl p-3 text-sm font-semibold">
                                 <option value="quarterly">Vierteljährlich</option>
                                 <option value="half-yearly">Halbjährlich</option>
                                 <option value="yearly">Jährlich</option>
                             </select>
                         </div>
-                        <select id="entry-period" onchange="prefillLastValues()" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-bold"></select>
-
-                        <div id="form-energy" class="space-y-4 pt-2">
+                        <select id="entry-period" onchange="prefillLastValues()" class="w-full bg-white border rounded-xl p-3 text-sm font-bold"></select>
+                        <div id="form-energy" class="space-y-4">
                             <div class="p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
-                                <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest block mb-2"><i class="fas fa-bolt mr-1"></i> Strom (kWh)</span>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <input type="number" id="s-start" placeholder="Letzter Wert" class="bg-white/50 border border-slate-200 rounded-xl p-2.5 text-sm font-medium" readonly>
-                                    <input type="number" id="s-end" placeholder="Neu" class="bg-white border border-orange-200 rounded-xl p-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-200">
-                                </div>
+                                <span class="text-[10px] font-black text-orange-600 uppercase block mb-2">Strom (kWh)</span>
+                                <div class="grid grid-cols-2 gap-3"><input type="number" id="s-start" placeholder="Alt" class="bg-white/50 border rounded-xl p-2.5 text-xs font-bold" readonly><input type="number" id="s-end" placeholder="Neu" class="bg-white border rounded-xl p-2.5 text-sm font-bold"></div>
                             </div>
                             <div class="p-4 bg-amber-50/50 rounded-2xl border border-amber-100">
-                                <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest block mb-2"><i class="fas fa-fire mr-1"></i> Gas (m³)</span>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <input type="number" id="g-start" placeholder="Letzter Wert" class="bg-white/50 border border-slate-200 rounded-xl p-2.5 text-sm font-medium" readonly>
-                                    <input type="number" id="g-end" placeholder="Neu" class="bg-white border border-amber-200 rounded-xl p-2.5 text-sm font-bold focus:ring-2 focus:ring-amber-200">
-                                </div>
+                                <span class="text-[10px] font-black text-amber-700 uppercase block mb-2">Gas (m³)</span>
+                                <div class="grid grid-cols-2 gap-3"><input type="number" id="g-start" placeholder="Alt" class="bg-white/50 border rounded-xl p-2.5 text-xs font-bold" readonly><input type="number" id="g-end" placeholder="Neu" class="bg-white border rounded-xl p-2.5 text-sm font-bold"></div>
                             </div>
                         </div>
-
-                        <div id="form-water" class="hidden space-y-4 pt-2">
+                        <div id="form-water" class="hidden space-y-4">
                             <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
-                                <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2"><i class="fas fa-droplet mr-1"></i> Trinkwasser (m³)</span>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <input type="number" id="w-start" placeholder="Letzter Wert" class="bg-white/50 border border-slate-200 rounded-xl p-2.5 text-sm font-medium" readonly>
-                                    <input type="number" id="w-end" placeholder="Neu" class="bg-white border border-blue-200 rounded-xl p-2.5 text-sm font-bold focus:ring-2 focus:ring-blue-200">
-                                </div>
+                                <span class="text-[10px] font-black text-blue-600 uppercase block mb-2">Trinkwasser (m³)</span>
+                                <div class="grid grid-cols-2 gap-3"><input type="number" id="w-start" placeholder="Alt" class="bg-white/50 border rounded-xl p-2.5 text-xs font-bold" readonly><input type="number" id="w-end" placeholder="Neu" class="bg-white border rounded-xl p-2.5 text-sm font-bold"></div>
                             </div>
                             <div id="input-garden-field" class="hidden p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-                                <span class="text-[10px] font-black text-emerald-700 uppercase tracking-widest block mb-2"><i class="fas fa-leaf mr-1"></i> Garten (m³)</span>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <input type="number" id="wg-start" placeholder="Letzter Wert" class="bg-white/50 border border-slate-200 rounded-xl p-2.5 text-sm font-medium" readonly>
-                                    <input type="number" id="wg-end" placeholder="Neu" class="bg-white border border-emerald-200 rounded-xl p-2.5 text-sm font-bold focus:ring-2 focus:ring-emerald-200">
-                                </div>
+                                <span class="text-[10px] font-black text-emerald-700 uppercase block mb-2">Garten (m³)</span>
+                                <div class="grid grid-cols-2 gap-3"><input type="number" id="wg-start" placeholder="Alt" class="bg-white/50 border rounded-xl p-2.5 text-xs font-bold" readonly><input type="number" id="wg-end" placeholder="Neu" class="bg-white border rounded-xl p-2.5 text-sm font-bold"></div>
                             </div>
                         </div>
-
-                        <button onclick="addEntry()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center">
-                            <i class="fas fa-save mr-2"></i> Speichern & Berechnen
-                        </button>
+                        <button onclick="addEntry()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-xl">Speichern & Berechnen</button>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-8 space-y-6">
-                
-                <div class="glass-card rounded-[2rem] p-8 shadow-2xl shadow-slate-200/60 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
-                    
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 relative">
-                        <div>
-                            <h2 class="text-3xl font-black text-slate-800 tracking-tight italic uppercase">Jahres-Bilanz <span class="text-blue-600" id="active-year-label"></span></h2>
-                            <p class="text-slate-500 font-medium">Zusammenfassung aller erfassten Zeiträume</p>
-                        </div>
-                        <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-2xl">
-                            <button onclick="changeYear(-1)" class="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm hover:text-blue-600 transition-all"><i class="fas fa-chevron-left"></i></button>
-                            <button onclick="changeYear(1)" class="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm hover:text-blue-600 transition-all"><i class="fas fa-chevron-right"></i></button>
+                <div class="glass-card rounded-[2rem] p-8 shadow-2xl relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <h2 class="text-3xl font-black text-slate-800 italic uppercase">Bilanz <span class="text-blue-600" id="active-year-label"></span></h2>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="openComparison()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all">
+                                <i class="fas fa-scale-balanced mr-2"></i> Tarife vergleichen
+                            </button>
+                            <div class="flex bg-slate-100 p-1.5 rounded-2xl">
+                                <button onclick="changeYear(-1)" class="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm"><i class="fas fa-chevron-left"></i></button>
+                                <button onclick="changeYear(1)" class="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm ml-2"><i class="fas fa-chevron-right"></i></button>
+                            </div>
                         </div>
                     </div>
-
-                    <div id="stats-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-                        </div>
+                    <div id="stats-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
-
-                <div class="space-y-4">
-                    <h3 class="text-sm font-extrabold text-slate-400 uppercase tracking-[0.2em] ml-2">Verlauf der Ablesungen</h3>
-                    <div id="history-list" class="space-y-3">
-                        </div>
-                </div>
+                <div id="history-list" class="space-y-3"></div>
             </div>
         </div>
     </div>
 
+    <div id="comparison-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-800">Tarif-Vergleich</h3>
+                    <p class="text-slate-500 text-sm font-medium">Basierend auf deinem aktuellen Verbrauch im Jahr <span id="comp-year-label"></span></p>
+                </div>
+                <button onclick="closeComparison()" class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-full hover:bg-red-50 hover:text-red-500 transition-all"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="comparison-content" class="p-8 overflow-y-auto space-y-8"></div>
+        </div>
+    </div>
+
 <script>
-// --- LOGIK & DATEN (Version 3.0) ---
+// --- DATEN & LOGIK ---
 const TAZV_PRESETS = {
-    zentral: { trink: 1.92, schmutz: 3.49, rain: 0.65, base: 25.02 },
-    dezentral: { trink: 1.92, schmutz: 4.87, rain: 0.65, base: 19.26 }
+    zentral: { trink: 1.92, schmutz: 3.49, rain: 0.65, base: 25.02, gardenBase: 2.00 },
+    dezentral: { trink: 1.92, schmutz: 4.87, rain: 0.65, base: 19.26, gardenBase: 2.00 }
 };
 
 const TARIFF_DATA = {
-    strom: { 'klima-classic': { name: 'Klima Classic', arbeitspreis: 0.3928, grundpreis: 14.99 }, 'klima-service-flex': { name: 'Klima Service Flex', arbeitspreis: 0.3714, grundpreis: 13.33 }, 'klima-wp': { name: 'Klima Wärmepumpe', arbeitspreis: 0.3076, grundpreis: 10.75 } },
-    gas: { 'erdgas-classic': { name: 'Erdgas Classic', tiers: [{ bis: 2700, arbeitspreis: 0.1896, grundpreis: 3.75 }, { bis: 13000, arbeitspreis: 0.1612, grundpreis: 13.75 }, { bis: 65400, arbeitspreis: 0.1490, grundpreis: 31.25 }, { bis: Infinity, arbeitspreis: 0.1547, grundpreis: 0.00 }] } }
+    strom: {
+        'klima-classic': { name: 'Klima Classic', arbeitspreis: 0.3928, grundpreis: 14.99 },
+        'klima-service-flex': { name: 'Klima Service Flex', arbeitspreis: 0.3714, grundpreis: 13.33 },
+        'klima-wp': { name: 'Klima Wärmepumpe', arbeitspreis: 0.3076, grundpreis: 10.75 }
+    },
+    gas: {
+        'erdgas-classic': { name: 'Erdgas Classic', tiers: [{ bis: 2700, arbeitspreis: 0.1896, grundpreis: 3.75 }, { bis: 13000, arbeitspreis: 0.1612, grundpreis: 13.75 }, { bis: 65400, arbeitspreis: 0.1490, grundpreis: 31.25 }, { bis: Infinity, arbeitspreis: 0.1547, grundpreis: 0.00 }] }
+    }
 };
 
 let appState = {
     currentTab: 'energy', viewYear: new Date().getFullYear(),
-    settings: { monthlyPayment: 266, gasFaktor: 10.5, stromTariff: 'klima-classic', gasTariff: 'erdgas-classic', waterType: 'zentral', wPriceT: 1.92, wPriceS: 3.49, wRainArea: 0, wBase: 25.02, wHasGarden: false },
+    settings: { monthlyPayment: 266, gasFaktor: 10.5, stromTariff: 'klima-classic', gasTariff: 'erdgas-classic', waterType: 'zentral', wPriceT: 1.92, wPriceS: 3.49, wBase: 25.02, wRainArea: 0, wHasGarden: false, wGardenBase: 2.00 },
     entries: []
 };
 
@@ -225,70 +182,83 @@ function initApp() {
     loadState();
     const curYear = new Date().getFullYear();
     document.getElementById('entry-year-select').innerHTML = `<option value="${curYear}">${curYear}</option><option value="${curYear-1}">${curYear-1}</option>`;
-    
-    const s = document.getElementById('strom-tariff-select'), g = document.getElementById('gas-tariff-select');
-    for (let k in TARIFF_DATA.strom) s.innerHTML += `<option value="${k}">${TARIFF_DATA.strom[k].name}</option>`;
-    for (let k in TARIFF_DATA.gas) g.innerHTML += `<option value="${k}">${TARIFF_DATA.gas[k].name}</option>`;
-    
-    updateIntervalLabels(); 
-    applySettingsToUI(); 
-    prefillLastValues();
-    switchTab('energy');
+    for (let k in TARIFF_DATA.strom) document.getElementById('strom-tariff-select').innerHTML += `<option value="${k}">${TARIFF_DATA.strom[k].name}</option>`;
+    for (let k in TARIFF_DATA.gas) document.getElementById('gas-tariff-select').innerHTML += `<option value="${k}">${TARIFF_DATA.gas[k].name}</option>`;
+    updateIntervalLabels(); applySettingsToUI(); switchTab('energy');
 }
 
-function updateIntervalLabels() {
-    const i = document.getElementById('entry-interval').value;
-    const p = document.getElementById('entry-period'); p.innerHTML = '';
-    const opts = i === 'quarterly' ? ['1. Quartal', '2. Quartal', '3. Quartal', '4. Quartal'] : (i === 'half-yearly' ? ['1. Halbjahr', '2. Halbjahr'] : ['Ganzes Jahr']);
-    opts.forEach((o, idx) => { p.innerHTML += `<option value="${idx+1}">${o}</option>`; });
-}
-
-function prefillLastValues() {
-    const year = parseInt(document.getElementById('entry-year-select').value);
-    const interval = document.getElementById('entry-interval').value;
-    const period = parseInt(document.getElementById('entry-period').value);
+function openComparison() {
+    const year = appState.viewYear;
+    document.getElementById('comp-year-label').textContent = year;
+    const entries = appState.entries.filter(e => e.year === year && e.category === 'energy');
     
-    let prevPeriod = period - 1; let prevYear = year;
-    if (prevPeriod < 1) {
-        prevYear -= 1;
-        prevPeriod = interval === 'quarterly' ? 4 : (interval === 'half-yearly' ? 2 : 1);
+    let totalStrom = 0, totalGas = 0, totalMonths = 0;
+    entries.forEach(e => {
+        totalStrom += e.data.strom.v;
+        totalGas += e.data.gas.v;
+        totalMonths += (e.interval === 'quarterly' ? 3 : (e.interval === 'half-yearly' ? 6 : 12));
+    });
+
+    if (totalMonths === 0) { alert("Keine Energiedaten für dieses Jahr vorhanden!"); return; }
+
+    let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div><h4 class="text-lg font-bold mb-4 flex items-center text-orange-600"><i class="fas fa-bolt mr-2"></i> Strom-Tarife</h4><div class="space-y-3">`;
+    
+    for (let key in TARIFF_DATA.strom) {
+        const t = TARIFF_DATA.strom[key];
+        const cost = (totalStrom * t.arbeitspreis) + (t.grundpreis * totalMonths);
+        const isCurrent = key === appState.settings.stromTariff;
+        html += `<div class="p-4 rounded-2xl border-2 ${isCurrent ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-white'}">
+            <div class="flex justify-between items-start mb-1">
+                <span class="font-bold text-slate-800">${t.name} ${isCurrent ? '<span class="ml-2 bg-blue-500 text-white text-[9px] px-2 py-0.5 rounded-full uppercase">Aktuell</span>' : ''}</span>
+                <span class="font-black text-slate-900">${formatEuro(cost)}</span>
+            </div>
+            <p class="text-[10px] text-slate-500 font-bold uppercase">${t.arbeitspreis.toFixed(4)}€/kWh | ${t.grundpreis.toFixed(2)}€ Basis</p>
+        </div>`;
     }
-    const prevEntry = appState.entries.find(e => e.year === prevYear && e.interval === interval && e.period === prevPeriod && e.category === appState.currentTab);
+
+    html += `</div></div><div><h4 class="text-lg font-bold mb-4 flex items-center text-amber-600"><i class="fas fa-fire mr-2"></i> Gas-Tarife</h4><div class="space-y-3">`;
     
-    if (appState.currentTab === 'energy') {
-        document.getElementById('s-start').value = prevEntry ? prevEntry.data.strom.end : '';
-        document.getElementById('g-start').value = prevEntry ? prevEntry.data.gas.end : '';
-    } else {
-        document.getElementById('w-start').value = prevEntry ? prevEntry.data.water.end : '';
-        document.getElementById('wg-start').value = prevEntry ? prevEntry.data.water.gardenEnd : '';
-    }
+    // Gas Vergleich (Erdgas Classic Tiers)
+    const gTariff = TARIFF_DATA.gas['erdgas-classic'];
+    const kwh = totalGas * appState.settings.gasFaktor;
+    let tier = gTariff.tiers.find(tr => kwh <= tr.bis) || gTariff.tiers[gTariff.tiers.length-1];
+    const gCost = (kwh * tier.arbeitspreis) + (tier.grundpreis * totalMonths);
+
+    html += `<div class="p-4 rounded-2xl border-2 border-blue-500 bg-blue-50">
+        <div class="flex justify-between items-start mb-1">
+            <span class="font-bold text-slate-800">${gTariff.name}</span>
+            <span class="font-black text-slate-900">${formatEuro(gCost)}</span>
+        </div>
+        <p class="text-[10px] text-slate-500 font-bold uppercase">${tier.arbeitspreis.toFixed(4)}€/kWh | Tier: ${tier.bis === Infinity ? 'Max' : tier.bis + 'kWh'}</p>
+    </div></div></div>`;
+
+    document.getElementById('comparison-content').innerHTML = html;
+    document.getElementById('comparison-modal').classList.remove('hidden');
 }
 
+function closeComparison() { document.getElementById('comparison-modal').classList.add('hidden'); }
+
+// --- RESTRICHTE LOGIK (WIE VORHER) ---
 function addEntry() {
-    const cat = appState.currentTab, interval = document.getElementById('entry-interval').value;
-    const year = parseInt(document.getElementById('entry-year-select').value), period = parseInt(document.getElementById('entry-period').value);
-    const months = interval === 'quarterly' ? 3 : (interval === 'half-yearly' ? 6 : 12);
-
+    const cat = appState.currentTab, interval = document.getElementById('entry-interval').value, year = parseInt(document.getElementById('entry-year-select').value), period = parseInt(document.getElementById('entry-period').value), months = interval === 'quarterly' ? 3 : (interval === 'half-yearly' ? 6 : 12);
     let data = {};
     if (cat === 'energy') {
-        const sS = parseFloat(document.getElementById('s-start').value)||0, sE = parseFloat(document.getElementById('s-end').value)||0;
-        const gS = parseFloat(document.getElementById('g-start').value)||0, gE = parseFloat(document.getElementById('g-end').value)||0;
+        const sS = parseFloat(document.getElementById('s-start').value)||0, sE = parseFloat(document.getElementById('s-end').value)||0, gS = parseFloat(document.getElementById('g-start').value)||0, gE = parseFloat(document.getElementById('g-end').value)||0;
         const sV = Math.max(0, sE - sS), gV = Math.max(0, gE - gS);
         data = { strom: { v: sV, c: sV > 0 ? calcEnergy('strom', sV, months) : 0, end: sE }, gas: { v: gV, c: gV > 0 ? calcEnergy('gas', gV, months) : 0, end: gE } };
     } else {
-        const wS = parseFloat(document.getElementById('w-start').value)||0, wE = parseFloat(document.getElementById('w-end').value)||0;
-        const wgS = parseFloat(document.getElementById('wg-start').value)||0, wgE = parseFloat(document.getElementById('wg-end').value)||0;
+        const wS = parseFloat(document.getElementById('w-start').value)||0, wE = parseFloat(document.getElementById('w-end').value)||0, wgS = parseFloat(document.getElementById('wg-start').value)||0, wgE = parseFloat(document.getElementById('wg-end').value)||0;
         const wV = Math.max(0, wE - wS), wgV = Math.max(0, wgE - wgS);
-        const chargeV = Math.max(0, wV - wgV); 
-        const cWater = (wV * appState.settings.wPriceT) + (chargeV * appState.settings.wPriceS) + (appState.settings.wBase * months) + (appState.settings.wRainArea * 0.65 / 12 * months);
+        const schmutzV = Math.max(0, wV - wgV);
+        let cWater = (wV * appState.settings.wPriceT) + (schmutzV * appState.settings.wPriceS) + (appState.settings.wBase * months) + (appState.settings.wRainArea * 0.65 / 12 * months);
+        if (appState.settings.wHasGarden) cWater += (appState.settings.wGardenBase * months);
         data = { water: { v: wV, gv: wgV, c: cWater, end: wE, gardenEnd: wgE } };
     }
-    
     appState.entries = appState.entries.filter(e => !(e.year === year && e.interval === interval && e.period === period && e.category === cat));
     appState.entries.push({ id: Date.now(), category: cat, year, interval, period, data, timestamp: new Date().toLocaleDateString('de-DE') });
-    
     saveState(); render(); prefillLastValues();
-    ['s-end', 'g-end', 'w-end', 'wg-end'].forEach(id => document.getElementById(id).value = '');
+    ['s-end', 'g-end', 'w-end', 'wg-end'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
 }
 
 function calcEnergy(type, consumption, months) {
@@ -303,77 +273,22 @@ function render() {
     document.getElementById('active-year-label').textContent = appState.viewYear;
     const filtered = appState.entries.filter(e => e.year === appState.viewYear && (appState.currentTab === 'stats' || e.category === appState.currentTab));
     let cost = 0, months = 0;
-    filtered.forEach(e => {
-        months += (e.interval === 'quarterly' ? 3 : (e.interval === 'half-yearly' ? 6 : 12));
-        cost += e.category === 'energy' ? (e.data.strom.c + e.data.gas.c) : e.data.water.c;
-    });
+    filtered.forEach(e => { months += (e.interval === 'quarterly' ? 3 : (e.interval === 'half-yearly' ? 6 : 12)); cost += e.category === 'energy' ? (e.data.strom.c + e.data.gas.c) : e.data.water.c; });
     const paid = months * appState.settings.monthlyPayment, bal = paid - cost;
-    
-    document.getElementById('stats-dashboard').innerHTML = `
-        <div class="bg-white p-6 rounded-3xl border-l-8 border-slate-300 shadow-sm">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Kosten gesamt</p>
-            <p class="text-2xl font-black text-slate-800">${formatEuro(cost)}</p>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border-l-8 border-blue-500 shadow-sm">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Abschlag gezahlt</p>
-            <p class="text-2xl font-black text-slate-800">${formatEuro(paid)}</p>
-        </div>
-        <div class="p-6 rounded-3xl border-2 ${bal >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} shadow-sm">
-            <p class="text-[10px] font-black ${bal >= 0 ? 'text-green-600' : 'text-red-600'} uppercase tracking-widest mb-1">Differenz</p>
-            <p class="text-2xl font-black ${bal >= 0 ? 'text-green-700' : 'text-red-700'}">${formatEuro(bal)}</p>
-        </div>`;
-    
+    document.getElementById('stats-dashboard').innerHTML = `<div class="bg-white p-6 rounded-3xl border-l-8 border-slate-300 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Kosten</p><p class="text-2xl font-black">${formatEuro(cost)}</p></div><div class="bg-white p-6 rounded-3xl border-l-8 border-blue-500 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Bezahlt</p><p class="text-2xl font-black">${formatEuro(paid)}</p></div><div class="p-6 rounded-3xl border-2 ${bal >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} shadow-sm"><p class="text-[10px] font-black uppercase tracking-widest mb-1">Differenz</p><p class="text-2xl font-black">${formatEuro(bal)}</p></div>`;
     const list = document.getElementById('history-list'); list.innerHTML = '';
     filtered.sort((a,b) => b.id - a.id).forEach(e => {
-        const isEnergy = e.category === 'energy';
-        const det = isEnergy ? `⚡ ${e.data.strom.v} kWh | 🔥 ${e.data.gas.v} m³` : `💧 ${e.data.water.v} m³ (Garten: ${e.data.water.gv} m³)`;
-        const pText = e.interval === 'quarterly' ? `${e.period}. Quartal` : (e.interval === 'half-yearly' ? `${e.period}. Halbjahr` : 'Ganzes Jahr');
-        
-        list.innerHTML += `
-            <div class="history-item glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-xl ${isEnergy ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center mr-4">
-                        <i class="fas ${isEnergy ? 'fa-bolt' : 'fa-droplet'}"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-extrabold text-slate-800">${pText} ${e.year}</p>
-                        <p class="text-xs text-slate-500 font-medium">${det}</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm font-black text-blue-600">${formatEuro(isEnergy ? (e.data.strom.c + e.data.gas.c) : e.data.water.c)}</p>
-                    <button onclick="deleteEntry(${e.id})" class="text-[10px] text-red-400 hover:text-red-600 uppercase font-bold tracking-tighter">Löschen</button>
-                </div>
-            </div>`;
+        const isE = e.category === 'energy', pT = e.interval === 'quarterly' ? `${e.period}. Q.` : (e.interval === 'half-yearly' ? `${e.period}. Hj.` : 'Jahr');
+        list.innerHTML += `<div class="glass-card p-5 rounded-2xl flex justify-between items-center"><div class="flex items-center"><div class="w-10 h-10 rounded-xl ${isE ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center mr-4"><i class="fas ${isE ? 'fa-bolt' : 'fa-droplet'}"></i></div><div><p class="text-sm font-extrabold text-slate-800">${pT} ${e.year}</p></div></div><div class="text-right"><p class="text-sm font-black text-blue-600">${formatEuro(isE ? (e.data.strom.c + e.data.gas.c) : e.data.water.c)}</p><button onclick="deleteEntry(${e.id})" class="text-[10px] text-red-400 font-bold uppercase">Löschen</button></div></div>`;
     });
 }
 
-function switchTab(tab) {
-    appState.currentTab = tab;
-    ['energy', 'water', 'stats'].forEach(t => {
-        const el = document.getElementById(`tab-${t}`);
-        if(t === tab) {
-            el.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center bg-white shadow-sm text-blue-600";
-        } else {
-            el.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center text-slate-500 hover:text-slate-800";
-        }
-    });
-    document.getElementById('form-energy').classList.toggle('hidden', tab !== 'energy');
-    document.getElementById('form-water').classList.toggle('hidden', tab !== 'water');
-    document.getElementById('setup-energy-fields').classList.toggle('hidden', tab !== 'energy');
-    document.getElementById('setup-water-fields').classList.toggle('hidden', tab !== 'water');
+function switchTab(t) {
+    appState.currentTab = t;
+    ['energy', 'water', 'stats'].forEach(x => document.getElementById(`tab-${x}`).className = x === t ? "px-6 py-2.5 rounded-xl text-sm font-bold bg-white shadow-sm text-blue-600" : "px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500");
+    document.getElementById('form-energy').classList.toggle('hidden', t !== 'energy'); document.getElementById('form-water').classList.toggle('hidden', t !== 'water');
+    document.getElementById('setup-energy-fields').classList.toggle('hidden', t !== 'energy'); document.getElementById('setup-water-fields').classList.toggle('hidden', t !== 'water');
     prefillLastValues(); render();
-}
-
-function applyWaterPreset() {
-    const p = TAZV_PRESETS[document.getElementById('water-type').value];
-    document.getElementById('w-price-t').value = p.trink;
-    document.getElementById('w-price-s').value = p.schmutz;
-    document.getElementById('w-base').value = p.base;
-}
-
-function toggleGardenField() {
-    document.getElementById('input-garden-field').classList.toggle('hidden', !document.getElementById('w-has-garden').checked);
 }
 
 function saveSettings() {
@@ -383,10 +298,11 @@ function saveSettings() {
     appState.settings.waterType = document.getElementById('water-type').value;
     appState.settings.wPriceT = parseFloat(document.getElementById('w-price-t').value)||0;
     appState.settings.wPriceS = parseFloat(document.getElementById('w-price-s').value)||0;
-    appState.settings.wRainArea = parseFloat(document.getElementById('w-rain-area').value)||0;
     appState.settings.wBase = parseFloat(document.getElementById('w-base').value)||0;
+    appState.settings.wRainArea = parseFloat(document.getElementById('w-rain-area').value)||0;
     appState.settings.wHasGarden = document.getElementById('w-has-garden').checked;
-    saveState(); render(); alert("Konfiguration wurde übernommen.");
+    appState.settings.wGardenBase = parseFloat(document.getElementById('w-garden-base').value)||0;
+    saveState(); render(); alert("Gespeichert");
 }
 
 function applySettingsToUI() {
@@ -396,20 +312,54 @@ function applySettingsToUI() {
     document.getElementById('water-type').value = appState.settings.waterType;
     document.getElementById('w-price-t').value = appState.settings.wPriceT;
     document.getElementById('w-price-s').value = appState.settings.wPriceS;
-    document.getElementById('w-rain-area').value = appState.settings.wRainArea;
     document.getElementById('w-base').value = appState.settings.wBase;
+    document.getElementById('w-rain-area').value = appState.settings.wRainArea;
     document.getElementById('w-has-garden').checked = appState.settings.wHasGarden;
+    document.getElementById('w-garden-base').value = appState.settings.wGardenBase;
     toggleGardenField();
 }
 
-function deleteEntry(id) { if(confirm("Eintrag unwiderruflich löschen?")) { appState.entries = appState.entries.filter(e => e.id !== id); saveState(); render(); prefillLastValues(); } }
+function applyWaterPreset() {
+    const p = TAZV_PRESETS[document.getElementById('water-type').value];
+    document.getElementById('w-price-t').value = p.trink;
+    document.getElementById('w-price-s').value = p.schmutz;
+    document.getElementById('w-base').value = p.base;
+    document.getElementById('w-garden-base').value = p.gardenBase;
+}
+
+function toggleGardenField() {
+    const h = document.getElementById('w-has-garden').checked;
+    document.getElementById('input-garden-field').classList.toggle('hidden', !h);
+    document.getElementById('setup-garden-base-div').classList.toggle('hidden', !h);
+}
+
+function updateIntervalLabels() {
+    const i = document.getElementById('entry-interval').value, p = document.getElementById('entry-period'); p.innerHTML = '';
+    const opts = i === 'quarterly' ? ['1. Q.', '2. Q.', '3. Q.', '4. Q.'] : (i === 'half-yearly' ? ['1. Hj.', '2. Hj.'] : ['Jahr']);
+    opts.forEach((o, idx) => p.innerHTML += `<option value="${idx+1}">${o}</option>`);
+}
+
+function prefillLastValues() {
+    const year = parseInt(document.getElementById('entry-year-select').value), interval = document.getElementById('entry-interval').value, period = parseInt(document.getElementById('entry-period').value);
+    let pP = period - 1, pY = year; if (pP < 1) { pY -= 1; pP = interval === 'quarterly' ? 4 : (interval === 'half-yearly' ? 2 : 1); }
+    const pE = appState.entries.find(e => e.year === pY && e.interval === interval && e.period === pP && e.category === appState.currentTab);
+    if (appState.currentTab === 'energy') {
+        document.getElementById('s-start').value = pE ? pE.data.strom.end : '';
+        document.getElementById('g-start').value = pE ? pE.data.gas.end : '';
+    } else {
+        document.getElementById('w-start').value = pE ? pE.data.water.end : '';
+        document.getElementById('wg-start').value = pE ? pE.data.water.gardenEnd : '';
+    }
+}
+
 function toggleSettings() { document.getElementById('settings-content').classList.toggle('hidden'); document.getElementById('settings-chevron').classList.toggle('rotate-180'); }
-function changeYear(dir) { appState.viewYear += dir; render(); }
+function changeYear(d) { appState.viewYear += d; render(); }
 function formatEuro(v) { return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v); }
-function saveState() { localStorage.setItem('vProfi_3_0', JSON.stringify(appState)); }
-function loadState() { const s = localStorage.getItem('vProfi_3_0'); if (s) appState = JSON.parse(s); }
-function exportData() { const blob = new Blob([JSON.stringify(appState)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Backup_Verbrauch.json`; a.click(); }
-function importData(e) { const reader = new FileReader(); reader.onload = (ev) => { appState = JSON.parse(ev.target.result); saveState(); location.reload(); }; reader.readAsText(e.target.files[0]); }
+function saveState() { localStorage.setItem('vProfi_3_2', JSON.stringify(appState)); }
+function loadState() { const s = localStorage.getItem('vProfi_3_2'); if (s) appState = JSON.parse(s); }
+function deleteEntry(id) { if(confirm("Löschen?")) { appState.entries = appState.entries.filter(e => e.id !== id); saveState(); render(); prefillLastValues(); } }
+function exportData() { const b = new Blob([JSON.stringify(appState)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Backup.json`; a.click(); }
+function importData(e) { const r = new FileReader(); r.onload = (ev) => { appState = JSON.parse(ev.target.result); saveState(); location.reload(); }; r.readAsText(e.target.files[0]); }
 </script>
 </body>
 </html>
